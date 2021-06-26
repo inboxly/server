@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Http\Resources\EntryResource;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+class EntriesController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Resources\Json\ResourceCollection
+     */
+    public function index(Request $request): ResourceCollection
+    {
+        $builder = $request->user()->entries()
+            ->with(['original', 'feed.original', 'collections'])
+            ->when(
+                $request->has('unreadOnly'),
+                fn(Builder $builder) => $builder->whereNull('read_at')
+            )
+            ->when(
+                $request->has('readOnly'),
+                fn(Builder $builder) => $builder->whereNotNull('read_at')
+            );
+
+        $builder = $request->has('oldest')
+            ? $builder->oldest('created_at')
+            : $builder->latest('created_at');
+
+        $entries = $builder->cursorPaginate()->withQueryString();
+
+        return EntryResource::collection($entries);
+    }
+}

@@ -1,0 +1,72 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use {{ rootNamespace }}Http\Controllers\Controller;
+use {{ rootNamespace }}Http\Requests\Store{{ model }}Request;
+use {{ rootNamespace }}Http\Requests\Update{{ model }}Request;
+use {{ rootNamespace }}Http\Resources\{{ model }}Resource;
+use {{ namespacedModel }};
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Response;
+
+class {{ class }} extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Resources\Json\ResourceCollection
+     */
+    public function index(): ResourceCollection
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \{{ rootNamespace }}Http\Requests\Store{{ model }}Request $request
+     * @return \Illuminate\Http\Resources\Json\JsonResource
+     */
+    public function store(Store{{ model }}Request $request): JsonResource
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return \Illuminate\Http\Resources\Json\JsonResource
+     */
+    public function show({{ model }} ${{ modelVariable }}): JsonResource
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \{{ rootNamespace }}Http\Requests\Update{{ model }}Request $request
+     * @param \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return \Illuminate\Http\Resources\Json\JsonResource
+     */
+    public function update(Update{{ model }}Request $request, {{ model }} ${{ modelVariable }}): JsonResource
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy({{ model }} ${{ modelVariable }}): Response
+    {
+        //
+    }
+}
