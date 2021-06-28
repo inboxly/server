@@ -55,8 +55,6 @@ Route::group(['middleware' => ['auth:api']], function () {
         ->name('saved.entries.destroy');
     Route::get('entries', [EntriesController::class, 'index'])
         ->name('entries.index');
-    Route::get('read/entries', [ReadEntriesController::class, 'index'])
-        ->name('read.entries.index');
     Route::post('read/entries', [ReadEntriesController::class, 'store'])
         ->name('read.entries.store');
     Route::delete('read/entries', [ReadEntriesController::class, 'destroy'])
