@@ -8,10 +8,7 @@ return [
     'text',
     'link',
     'image',
-    'author' => [
-        'name',
-        'link',
-    ],
+    'author',
     'is_read',
     'is_saved',
     'created_at',
