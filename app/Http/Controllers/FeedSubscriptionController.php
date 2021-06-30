@@ -35,11 +35,9 @@ class FeedSubscriptionController extends Controller
             ]);
         }
 
-        if ($request->hasCategoryIds()) {
-            $feed->categories()->syncWithoutDetaching(
-                $request->categoryIds()
-            );
-        }
+        $feed->categories()->syncWithoutDetaching(
+            $request->categoryIds()
+        );
 
         $latestOriginalEntries = $originalFeed->originalEntries()->latest('created_at')->limit(10)->get();
 

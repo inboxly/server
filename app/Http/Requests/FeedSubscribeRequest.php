@@ -35,17 +35,6 @@ class FeedSubscribeRequest extends FormRequest
     }
 
     /**
-     * Determine that request has ids
-     * todo: Delete, because according to rule "min:1", the request contains at least one id.
-     *
-     * @return bool
-     */
-    public function hasCategoryIds(): bool
-    {
-        return count($this->categoryIds()) > 0;
-    }
-
-    /**
      * Get array of category ids
      *
      * @return array
