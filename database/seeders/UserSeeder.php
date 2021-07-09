@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Collection;
 use App\Models\OriginalFeed;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -19,6 +20,7 @@ class UserSeeder extends Seeder
     {
         /** @var User $user */
         $user = User::factory()->create(['api_token' => 'api_token']);
+        Collection::factory(2)->create(['user_id' => $user->getKey()]);
 
         $this->subscribeMain($user, [
             'https://lenta.ru/rss/',
