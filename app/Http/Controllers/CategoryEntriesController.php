@@ -35,7 +35,15 @@ class CategoryEntriesController extends Controller
             );
 
         $builder = $request->has('oldest') ? $builder->oldest('created_at') : $builder->latest('created_at');
-        $entries = $builder->cursorPaginate()->withQueryString();
+
+        /**
+         * Hotfix for ignore ide warnings.
+         * Delete this when the 'cursorPaginate()' method will
+         * return the interface with the 'withQueryString() method.
+         * @var \Illuminate\Pagination\AbstractPaginator $paginator
+         */
+        $paginator = $builder->cursorPaginate();
+        $entries = $paginator->withQueryString();
 
         return EntryResource::collection($entries);
     }
