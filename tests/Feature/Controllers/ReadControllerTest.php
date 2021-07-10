@@ -163,6 +163,33 @@ class ReadControllerTest extends TestCase
         $this->assertNull($entry->refresh()->read_at);
     }
 
+    /**
+     * @test
+     * @see \App\Http\Controllers\ReadController::saved()
+     */
+    public function can_add_saved_entries_to_read(): void
+    {
+        // Setup
+        $this->prepareEntries();
+        $savedEntries = Entry::factory(2)->create([
+            'user_id' => $this->user->getKey(),
+            'feed_id' => $this->feed->getKey(),
+            'saved_at' => fn() => Carbon::now(),
+        ]);
+
+        // Run
+        $response = $this->asUser()->postJson("api/read/saved");
+
+        // Asserts
+        $response->assertNoContent();
+
+        $readEntries = $this->user->entries()->whereNotNull('read_at')->get();
+        $this->assertSame($readEntries->modelKeys(), $savedEntries->modelKeys());
+
+        $unreadEntries = $this->user->entries()->whereNull('read_at')->get();
+        $this->assertSame($unreadEntries->modelKeys(), $this->allEntries->modelKeys());
+    }
+
     protected function prepareEntries()
     {
         // Feed entries

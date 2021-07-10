@@ -83,4 +83,23 @@ class ReadController extends Controller
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
+
+    /**
+     * Mark all entries as read
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function saved(Request $request): Response
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        $user->entries()
+            ->whereNull('read_at')
+            ->whereNotNull('saved_at')
+            ->update(['read_at' => now()]);
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
 }
