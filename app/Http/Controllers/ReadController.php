@@ -6,8 +6,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Feed;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 
 class ReadController extends Controller
 {
@@ -24,6 +26,11 @@ class ReadController extends Controller
 
         $user->entries()
             ->whereNull('read_at')
+            ->when(
+                $request->has('todayOnly'),
+                // todo: use date of creating an original entry instead
+                fn(Builder $builder) => $builder->where('created_at', '>=', Carbon::today())
+            )
             ->update(['read_at' => now()]);
 
         return new Response(null, Response::HTTP_NO_CONTENT);

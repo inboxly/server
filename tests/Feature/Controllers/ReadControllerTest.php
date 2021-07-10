@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Entry;
 use App\Models\Feed;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 /**
@@ -38,6 +39,33 @@ class ReadControllerTest extends TestCase
 
         $entries = $this->user->entries()->whereNotNull('read_at')->get();
         $this->assertSame($entries->modelKeys(), $this->allEntries->modelKeys());
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\ReadController::all()
+     */
+    public function can_add_all_today_entries_to_read(): void
+    {
+        // Setup
+        $this->prepareEntries();
+        $oldEntries = Entry::factory(2)->create([
+            'user_id' => $this->user->getKey(),
+            'feed_id' => $this->feed->getKey(),
+            'created_at' => fn () => Carbon::today()->subWeek(),
+        ]);
+
+        // Run
+        $response = $this->asUser()->postJson("api/read/all?todayOnly=1");
+
+        // Asserts
+        $response->assertNoContent();
+
+        $entries = $this->user->entries()->whereNotNull('read_at')->get();
+        $this->assertSame($entries->modelKeys(), $this->allEntries->modelKeys());
+
+        $unreadEntries = $this->user->entries()->whereNull('read_at')->get();
+        $this->assertSame($unreadEntries->modelKeys(), $oldEntries->modelKeys());
     }
 
     /**
