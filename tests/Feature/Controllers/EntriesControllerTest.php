@@ -8,6 +8,7 @@ use App\Models\Collection;
 use App\Models\Entry;
 use App\Models\Feed;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 /**
@@ -184,6 +185,86 @@ class EntriesControllerTest extends TestCase
             ['id' => $this->unreadEntries->first()->getKey()],
             ['id' => $this->unreadEntries->last()->getKey()],
         ]]);
+
+        $response->assertJsonStructure(['data' => [
+            $this->entryStructure(),
+        ]]);
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\EntriesController::index()
+     */
+    public function can_get_list_of_today_entries(): void
+    {
+        // Setup
+        $this->prepareEntries();
+        $feed = Feed::factory()->create(['user_id' => $this->user->getKey()]);
+        $oldEntries = Entry::factory(2)->read()->create([
+            'user_id' => $this->user->getKey(),
+            'feed_id' => $feed->getKey(),
+            'created_at' => fn () => Carbon::now()->subWeek(),
+        ]);
+
+        // Run
+        $response = $this->asUser()->getJson("api/entries?todayOnly=1");
+
+        // Asserts
+        $response->assertOk();
+        $response->assertJsonCount(4, 'data');
+
+        $response->assertJsonMissing(['data' => [
+            ['id' => $oldEntries->last()->getKey()],
+            ['id' => $oldEntries->first()->getKey()],
+        ]]);
+
+        $response->assertJson(['data' => [
+            ['id' => $this->unreadEntries->last()->getKey()],
+            ['id' => $this->unreadEntries->first()->getKey()],
+            ['id' => $this->readEntries->last()->getKey()],
+            ['id' => $this->readEntries->first()->getKey()],
+        ]]);
+
+
+        $response->assertJsonStructure(['data' => [
+            $this->entryStructure(),
+        ]]);
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\EntriesController::index()
+     */
+    public function can_get_reversed_list_of_today_entries(): void
+    {
+        // Setup
+        $this->prepareEntries();
+        $feed = Feed::factory()->create(['user_id' => $this->user->getKey()]);
+        $oldEntries = Entry::factory(2)->read()->create([
+            'user_id' => $this->user->getKey(),
+            'feed_id' => $feed->getKey(),
+            'created_at' => fn () => Carbon::now()->subWeek(),
+        ]);
+
+        // Run
+        $response = $this->asUser()->getJson("api/entries?todayOnly=1&oldest=1");
+
+        // Asserts
+        $response->assertOk();
+        $response->assertJsonCount(4, 'data');
+
+        $response->assertJsonMissing(['data' => [
+            ['id' => $oldEntries->first()->getKey()],
+            ['id' => $oldEntries->last()->getKey()],
+        ]]);
+
+        $response->assertJson(['data' => [
+            ['id' => $this->readEntries->first()->getKey()],
+            ['id' => $this->readEntries->last()->getKey()],
+            ['id' => $this->unreadEntries->first()->getKey()],
+            ['id' => $this->unreadEntries->last()->getKey()],
+        ]]);
+
 
         $response->assertJsonStructure(['data' => [
             $this->entryStructure(),
