@@ -28,6 +28,9 @@ class CreateOriginalFeedsTable extends Migration
             $table->string('language')->nullable();
             $table->timestamp('next_update_at', 6)->nullable();
             $table->timestamps();
+
+            // Indexes
+            $table->unique(['fetcher_key', 'fetcher_feed_id']);
         });
     }
 
