@@ -24,7 +24,7 @@
         "guzzlehttp/guzzle": "^7.3.0",
         "inboxly/receiver": "^0.1",
         "inboxly/text-processing": "^0.1",
-        "kevinrob/guzzle-cache-middleware": "^3.3",
+        "kevinrob/guzzle-cache-middleware": "^3.4",
         "laminas/laminas-diactoros": "^2.6",
         "laravel/framework": "^8.54",
         "laravel/tinker": "^2.6"
@@ -32,10 +32,10 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",
         "doctrine/dbal": "^3.1",
-        "facade/ignition": "^2.10",
-        "fakerphp/faker": "^1.14.1",
+        "facade/ignition": "^2.11",
+        "fakerphp/faker": "^1.15",
         "mockery/mockery": "^1.4.3",
-        "nunomaduro/collision": "^5.5",
+        "nunomaduro/collision": "^5.8",
         "phpunit/phpunit": "^9.5.6"
     },
     "autoload": {
