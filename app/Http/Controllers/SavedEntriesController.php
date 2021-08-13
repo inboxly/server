@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BatchEntriesRequest;
 use App\Http\Resources\EntryResource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
@@ -23,22 +24,18 @@ class SavedEntriesController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
+        /** @var \Illuminate\Database\Eloquent\Builder $builder */
         $builder = $user->entries()
             ->with(['original', 'feed.original', 'collections'])
-            ->whereNotNull('saved_at');
+            ->whereNotNull('saved_at')
+            ->when(
+                $request->has('oldest'),
+                // todo: use date of creating an original entry instead
+                fn(Builder $builder) => $builder->oldest('created_at'),
+                fn(Builder $builder) => $builder->latest('created_at')
+            );
 
-        $builder = $request->has('oldest')
-            ? $builder->oldest('created_at')
-            : $builder->latest('created_at');
-
-        /**
-         * Hotfix for ignore ide warnings.
-         * Delete this when the 'cursorPaginate()' method will
-         * return the interface with the 'withQueryString() method.
-         * @var \Illuminate\Pagination\AbstractPaginator $paginator
-         */
-        $paginator = $builder->cursorPaginate();
-        $entries = $paginator->withQueryString();
+        $entries = $builder->cursorPaginate()->withQueryString();
 
         return EntryResource::collection($entries);
     }

@@ -26,24 +26,22 @@ class CategoryEntriesController extends Controller
 
         $feedsIds = $category->feeds()->pluck('feeds.id');
 
+        /** @var \Illuminate\Database\Eloquent\Builder $builder */
         $builder = $request->user()->entries()
             ->with(['original', 'feed.original', 'collections'])
             ->whereIn('feed_id', $feedsIds)
             ->when(
                 $request->has('unreadOnly'),
                 fn(Builder $builder) => $builder->whereNull('read_at')
+            )
+            ->when(
+                $request->has('oldest'),
+                // todo: use date of creating an original entry instead
+                fn(Builder $builder) => $builder->oldest('created_at'),
+                fn(Builder $builder) => $builder->latest('created_at')
             );
 
-        $builder = $request->has('oldest') ? $builder->oldest('created_at') : $builder->latest('created_at');
-
-        /**
-         * Hotfix for ignore ide warnings.
-         * Delete this when the 'cursorPaginate()' method will
-         * return the interface with the 'withQueryString() method.
-         * @var \Illuminate\Pagination\AbstractPaginator $paginator
-         */
-        $paginator = $builder->cursorPaginate();
-        $entries = $paginator->withQueryString();
+        $entries = $builder->cursorPaginate()->withQueryString();
 
         return EntryResource::collection($entries);
     }

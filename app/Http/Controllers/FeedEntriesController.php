@@ -21,23 +21,21 @@ class FeedEntriesController extends Controller
      */
     public function index(Request $request, Feed $feed): ResourceCollection
     {
+        /** @var \Illuminate\Database\Eloquent\Builder $builder */
         $builder = $feed->entries()
             ->with(['original', 'feed.original', 'collections'])
             ->when(
                 $request->has('unreadOnly'),
                 fn(Builder $builder) => $builder->whereNull('read_at')
+            )
+            ->when(
+                $request->has('oldest'),
+                // todo: use date of creating an original entry instead
+                fn(Builder $builder) => $builder->oldest('created_at'),
+                fn(Builder $builder) => $builder->latest('created_at')
             );
 
-        $builder = $request->has('oldest') ? $builder->oldest() : $builder->latest();
-
-        /**
-         * Hotfix for ignore ide warnings.
-         * Delete this when the 'cursorPaginate()' method will
-         * return the interface with the 'withQueryString() method.
-         * @var \Illuminate\Pagination\AbstractPaginator $paginator
-         */
-        $paginator = $builder->cursorPaginate();
-        $entries = $paginator->withQueryString();
+        $entries = $builder->cursorPaginate()->withQueryString();
 
         return EntryResource::collection($entries);
     }
