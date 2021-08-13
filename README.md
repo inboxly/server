@@ -29,21 +29,33 @@ You choose these sources of information that you are really interested and thank
 - Export entries to file
 - Third-party extensions management
 
+## Install
+
+```shell
+# Install dependencies
+./inboxly install
+```
+
+## Run
+
+```shell
+# Run server and setup fresh DB
+./inboxly up -d
+./inboxly artisan migrate:fresh
+```
 
 ## Testing
 
-Run the tests with:
+Run the tests :
 
 ```bash
-composer test
+./inboxly test
 ```
-
 
 ## Credits
 
 - [Sento Sango](https://github.com/sentosango)
 - [All Contributors](../../contributors)
-
 
 ## License
 

@@ -34,7 +34,6 @@
         "doctrine/dbal": "^3.1",
         "facade/ignition": "^2.10",
         "fakerphp/faker": "^1.14.1",
-        "laravel/sail": "^1.8",
         "mockery/mockery": "^1.4.3",
         "nunomaduro/collision": "^5.5",
         "phpunit/phpunit": "^9.5.6"
@@ -71,7 +70,7 @@
         "schedule": [
             "@php artisan schedule:work"
         ],
-        "test": "vendor/bin/phpunit"
+        "test": "@php artisan test"
     },
     "extra": {
         "laravel": {
