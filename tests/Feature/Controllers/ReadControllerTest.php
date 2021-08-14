@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Controllers;
 
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Entry;
 use App\Models\Feed;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -19,6 +20,8 @@ class ReadControllerTest extends TestCase
     private EloquentCollection $allEntries;
     private Category $category;
     private EloquentCollection $categoryEntries;
+    private Collection $collection;
+    private EloquentCollection $collectionEntries;
     private Feed $feed;
     private EloquentCollection $feedEntries;
 
@@ -104,7 +107,7 @@ class ReadControllerTest extends TestCase
         ]);
 
         // Run
-        $response = $this->asUser()->postJson("api/read/feeds/{$feed->original_feed_id}");
+        $response = $this->asUser()->postJson("api/read/feeds/$feed->original_feed_id");
 
         // Asserts
         $response->assertNotFound();
@@ -165,6 +168,55 @@ class ReadControllerTest extends TestCase
 
     /**
      * @test
+     * @see \App\Http\Controllers\ReadController::collection()
+     */
+    public function can_add_collection_entries_to_read(): void
+    {
+        // Setup
+        $this->prepareEntries();
+
+        // Run
+        $response = $this->asUser()->postJson("api/read/collections/{$this->collection->getKey()}");
+
+        // Asserts
+        $response->assertNoContent();
+
+        $entries = $this->user->entries()->whereNotNull('read_at')->get();
+        $this->assertSame($entries->modelKeys(), $this->collectionEntries->modelKeys());
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\ReadController::collection()
+     */
+    public function cannot_add_not_its_collection_entries_to_read(): void
+    {
+        // Setup
+        /** @var \App\Models\Collection $collection */
+        $collection = Collection::factory()->create();
+
+        /** @var Feed $feed */
+        $feed = Feed::factory()->create([
+            'user_id' => $collection->user_id,
+        ]);
+
+        /** @var Entry $entry */
+        $entry = Entry::factory()->create([
+            'feed_id' => $feed->getKey(),
+            'user_id' => $feed->user_id,
+        ]);
+
+        // Run
+        $response = $this->asUser()->postJson("api/read/collections/{$collection->getKey()}");
+
+        // Asserts
+        $response->assertForbidden();
+
+        $this->assertNull($entry->refresh()->read_at);
+    }
+
+    /**
+     * @test
      * @see \App\Http\Controllers\ReadController::saved()
      */
     public function can_add_saved_entries_to_read(): void
@@ -190,6 +242,7 @@ class ReadControllerTest extends TestCase
         $this->assertSame($unreadEntries->modelKeys(), $this->allEntries->modelKeys());
     }
 
+    /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
     protected function prepareEntries()
     {
         // Feed entries
@@ -207,6 +260,11 @@ class ReadControllerTest extends TestCase
         $this->category = Category::factory()->create(['user_id' => $this->user->getKey()]);
         $this->category->feeds()->syncWithoutDetaching([$this->feed->getKey(), $categoryFeed->getKey()]);
 
+        // Collection entries
+        $this->collectionEntries = $this->feedEntries;
+        $this->collection = Collection::factory()->create(['user_id' => $this->user->getKey()]);
+        $this->collection->entries()->syncWithoutDetaching($this->collectionEntries);
+
         // All entries
         $this->allEntries = $this->categoryEntries->merge(Entry::factory(2)->create([
             'user_id' => $this->user->getKey(),
@@ -216,7 +274,6 @@ class ReadControllerTest extends TestCase
 
     protected function entryStructure(): array
     {
-        /** @noinspection PhpIncludeInspection */
         return require base_path('tests/fixtures/entry-structure.php');
     }
 }

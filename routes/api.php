@@ -63,6 +63,8 @@ Route::group(['middleware' => ['auth:api']], function () {
         ->name('read.all');
     Route::post('read/categories/{category}', [ReadController::class, 'category'])
         ->name('read.category');
+    Route::post('read/collections/{collection}', [ReadController::class, 'collection'])
+        ->name('read.collection');
     Route::post('read/feeds/{feedByOriginalFeedId}', [ReadController::class, 'feed'])
         ->name('read.feed');
     Route::post('read/saved', [ReadController::class, 'saved'])

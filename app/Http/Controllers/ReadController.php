@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Feed;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -55,6 +56,24 @@ class ReadController extends Controller
 
         $user->entries()
             ->whereIn('feed_id', $feedsIds)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Mark collection entries as read
+     *
+     * @param \App\Models\Collection $collection
+     * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function collection(Collection $collection): Response
+    {
+        $this->authorize('update', $collection);
+
+        $collection->entries()
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
