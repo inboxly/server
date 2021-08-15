@@ -1277,16 +1277,16 @@
         },
         {
             "name": "inboxly/text-processing",
-            "version": "v0.1.1",
+            "version": "v0.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/inboxly/text-processing.git",
-                "reference": "fab35bbbbd65cbfb7512221f9d86a5455d626c2b"
+                "reference": "c2d325456965b426e64513b270f4e0ec3a981945"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inboxly/text-processing/zipball/fab35bbbbd65cbfb7512221f9d86a5455d626c2b",
-                "reference": "fab35bbbbd65cbfb7512221f9d86a5455d626c2b",
+                "url": "https://api.github.com/repos/inboxly/text-processing/zipball/c2d325456965b426e64513b270f4e0ec3a981945",
+                "reference": "c2d325456965b426e64513b270f4e0ec3a981945",
                 "shasum": ""
             },
             "require": {
@@ -1335,7 +1335,7 @@
                 "issues": "https://github.com/inboxly/text-processing/issues",
                 "source": "https://github.com/inboxly/text-processing"
             },
-            "time": "2021-06-26T01:05:49+00:00"
+            "time": "2021-08-15T18:50:26+00:00"
         },
         {
             "name": "kevinrob/guzzle-cache-middleware",
