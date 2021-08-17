@@ -29,6 +29,16 @@ class Feed extends Model
     protected $fillable = [
         'original_feed_id',
         'title',
+        'subscribed_at',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'subscribed_at' => 'datetime',
     ];
 
     /**

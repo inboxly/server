@@ -46,6 +46,7 @@ class FeedSubscriptionControllerTest extends TestCase
         ]);
 
         $this->assertNotNull($originalFeed->fresh()->next_update_at);
+        $this->assertTrue(Feed::whereNotNull('subscribed_at')->exists());
 
         $this->assertDatabaseCount('category_feed', 0);
     }
@@ -94,6 +95,7 @@ class FeedSubscriptionControllerTest extends TestCase
         ]);
 
         $this->assertNotNull($originalFeed->fresh()->next_update_at);
+        $this->assertTrue(Feed::whereNotNull('subscribed_at')->exists());
 
         $this->assertDatabaseCount('category_feed', 2);
     }
@@ -126,11 +128,11 @@ class FeedSubscriptionControllerTest extends TestCase
         $this->assertDatabaseCount('original_entries', 1);
 
         $this->assertNull($originalFeed->fresh()->next_update_at);
+        $this->assertTrue(Feed::whereNotNull('subscribed_at')->doesntExist());
     }
 
     protected function feedStructure()
     {
-        /** @noinspection PhpIncludeInspection */
         return require base_path('tests/fixtures/feed-structure.php');
     }
 }

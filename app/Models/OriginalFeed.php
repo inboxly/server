@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Casts\ParametersCast;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -101,5 +102,25 @@ class OriginalFeed extends Model
             'updated_at' => $receiverFeed->updatedAt,
             'next_update_at' => $receiverFeed->nextUpdateAt,
         ]);
+    }
+
+    /**
+     * Enable auto-updating original feed
+     *
+     * @return void
+     */
+    public function enableUpdating(): void
+    {
+        $this->update(['next_update_at' => Carbon::now()]);
+    }
+
+    /**
+     * Disable auto-updating original feed
+     *
+     * @return void
+     */
+    public function disableUpdating(): void
+    {
+        $this->update(['next_update_at' => null]);
     }
 }

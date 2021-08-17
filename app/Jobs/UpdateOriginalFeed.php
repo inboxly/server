@@ -104,6 +104,7 @@ class UpdateOriginalFeed implements ShouldQueue
 
         Feed::query()
             ->where('original_feed_id', $this->originalFeed->getKey())
+            ->whereNotNull('subscribed_at')
             ->each(function (Feed $feed) use ($newOriginalEntries) {
                 $entries = $newOriginalEntries
                     ->map(function (OriginalEntry $originalEntry) use ($feed) {

@@ -30,9 +30,11 @@ class FeedSubscriptionController extends Controller
         ]);
 
         if ($feed->wasRecentlyCreated && $originalFeed->next_update_at === null) {
-            $originalFeed->update([
-                'next_update_at' => Carbon::now(),
-            ]);
+            $originalFeed->enableUpdating();
+        }
+
+        if ($feed->subscribed_at === null) {
+            $feed->update(['subscribed_at' => Carbon::now()]);
         }
 
         $feed->categories()->syncWithoutDetaching(
@@ -67,11 +69,21 @@ class FeedSubscriptionController extends Controller
         $this->authorize('delete', $feed);
 
         $feed->categories()->detach();
-        $feed->entries()->delete();
-        $feed->delete();
+        $feed->entries()->whereNull('read_at')->delete();
 
-        if (Feed::where('original_feed_id', $feed->original_feed_id)->doesntExist()) {
-            $feed->original->update(['next_update_at' => null]);
+        if ($feed->entries()->exists()) {
+            $feed->update(['subscribed_at' => null]);
+        } else {
+            $feed->delete();
+        }
+
+        $originalFeedDoesntHaveSubscribers = Feed::query()
+            ->where('original_feed_id', $feed->original_feed_id)
+            ->whereNotNull('subscribed_at')
+            ->doesntExist();
+
+        if ($originalFeedDoesntHaveSubscribers) {
+            $feed->original->disableUpdating();
         }
 
         return new Response(null, Response::HTTP_NO_CONTENT);

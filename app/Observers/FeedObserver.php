@@ -18,7 +18,7 @@ class FeedObserver
     {
         // Schedule next update for original feed
         if ($feed->original->next_update_at === null) {
-            $feed->original->update(['next_update_at' => now()]);
+            $feed->original->enableUpdating();
         }
     }
 }

@@ -84,6 +84,7 @@ namespace App\Models{
  * @property int $user_id
  * @property int $original_feed_id
  * @property string|null $title
+ * @property \Illuminate\Support\Carbon|null $subscribed_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Category[] $categories
