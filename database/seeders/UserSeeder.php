@@ -24,10 +24,11 @@ class UserSeeder extends Seeder
 
         $this->subscribeMain($user, [
             'https://lenta.ru/rss/',
+            'https://habr.com/ru/rss/best/daily/?fl=ru'
         ]);
 
         $this->subscribeYoutube($user, [
-            'https://www.youtube.com/feeds/videos.xml?channel_id=UCb9XEo_1SDNR8Ucpbktrg5A',
+            'https://www.youtube.com/feeds/videos.xml?channel_id=UCld68syR8Wi-GY_n4CaoJGA',
         ]);
     }
 
@@ -44,7 +45,6 @@ class UserSeeder extends Seeder
             /** @var \App\Models\Feed $feed */
             $feed = $user->feeds()->create([
                 'original_feed_id' => $originalFeed->id,
-                'name' => 'Lenta.ru',
                 'subscribed_at' => now(),
             ]);
 
