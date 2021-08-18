@@ -50,7 +50,11 @@ class UpdateOriginalFeed implements ShouldQueue
             return;
         }
 
-        $this->createEntriesForSubscribers($originalEntries);
+        $newOriginalEntries = $originalEntries->filter(
+            fn(OriginalEntry $originalEntry) => $originalEntry->wasRecentlyCreated
+        );
+
+        $this->createEntriesForSubscribers($newOriginalEntries);
     }
 
     /**
@@ -98,21 +102,16 @@ class UpdateOriginalFeed implements ShouldQueue
      */
     protected function createEntriesForSubscribers(Collection $originalEntries): void
     {
-        $newOriginalEntries = $originalEntries->filter(
-            fn(OriginalEntry $originalEntry) => $originalEntry->wasRecentlyCreated
-        );
-
         Feed::query()
             ->where('original_feed_id', $this->originalFeed->getKey())
             ->whereNotNull('subscribed_at')
-            ->each(function (Feed $feed) use ($newOriginalEntries) {
-                $entries = $newOriginalEntries
-                    ->map(function (OriginalEntry $originalEntry) use ($feed) {
-                        return ['user_id' => $feed->user_id, 'original_entry_id' => $originalEntry->id];
-                    })
-                    ->toArray();
+            ->each(function (Feed $feed) use ($originalEntries) {
+                $entriesAttrs = $originalEntries->map(fn(OriginalEntry $originalEntry) => [
+                    'user_id' => $feed->user_id,
+                    'original_entry_id' => $originalEntry->id
+                ]);
 
-                $feed->entries()->createMany($entries);
+                $feed->entries()->createMany($entriesAttrs);
             });
     }
 }
