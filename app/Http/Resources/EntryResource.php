@@ -21,10 +21,10 @@ class EntryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->original->title,
-            'description' => $this->original->description,
-            'text' => $this->original->text,
-            'link' => $this->original->link,
+            'name' => $this->original->name,
+            'summary' => $this->original->summary,
+            'content' => $this->original->content,
+            'url' => $this->original->url,
             'image' => $this->original->image,
             'author' => $this->original->author,
             'is_read' => (bool)$this->read_at,

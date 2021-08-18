@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 return [
-    'title',
-    'description',
-    'text',
-    'link',
+    'name',
+    'summary',
+    'content',
+    'url',
     'image',
     'author',
     'is_read',
@@ -14,7 +14,7 @@ return [
     'created_at',
     'updated_at',
     'feed' => [
-        'title',
+        'name',
         'author',
     ],
     'collections' => [],

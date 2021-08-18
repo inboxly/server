@@ -21,7 +21,7 @@ class SimpleFeedResource extends JsonResource
     {
         return [
             'id' => $this->original_feed_id,
-            'title' => $this->title ?: $this->original->title,
+            'name' => $this->name ?: $this->original->name,
             'image' => $this->original->image,
         ];
     }

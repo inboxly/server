@@ -16,7 +16,7 @@ namespace App\Models{
  *
  * @property int $id
  * @property int $user_id
- * @property string $title
+ * @property string $name
  * @property bool $is_default
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -37,7 +37,7 @@ namespace App\Models{
  *
  * @property int $id
  * @property int $user_id
- * @property string $title
+ * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entry[] $entries
@@ -83,7 +83,7 @@ namespace App\Models{
  * @property int $id
  * @property int $user_id
  * @property int $original_feed_id
- * @property string|null $title
+ * @property string|null $name
  * @property \Illuminate\Support\Carbon|null $subscribed_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -110,10 +110,10 @@ namespace App\Models{
  * @property int $original_feed_id
  * @property string $external_id
  * @property string $hash
- * @property string $title
- * @property string|null $description
- * @property string|null $text
- * @property string|null $link
+ * @property string $name
+ * @property string|null $summary
+ * @property string|null $content
+ * @property string|null $url
  * @property string|null $image
  * @property object|null $author
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -136,9 +136,9 @@ namespace App\Models{
  * @property string $fetcher_key
  * @property string $fetcher_feed_id
  * @property \Inboxly\Receiver\Contracts\Parameters|null $parameters
- * @property string $title
- * @property string|null $description
- * @property string|null $link
+ * @property string $name
+ * @property string|null $summary
+ * @property string|null $url
  * @property string|null $image
  * @property string|null $author
  * @property string|null $language

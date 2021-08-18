@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a654c78b76651917e0cd731ef0e94ba",
+    "content-hash": "41a99cc7931607ca443fd695b08f34b9",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1212,16 +1212,16 @@
         },
         {
             "name": "inboxly/receiver",
-            "version": "v0.1.2",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/inboxly/receiver.git",
-                "reference": "6809e87e44b5d04637af094c23e40ee6024827c0"
+                "reference": "3709f3a2f22bd49c15b7c2077986da66fa96b98a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inboxly/receiver/zipball/6809e87e44b5d04637af094c23e40ee6024827c0",
-                "reference": "6809e87e44b5d04637af094c23e40ee6024827c0",
+                "url": "https://api.github.com/repos/inboxly/receiver/zipball/3709f3a2f22bd49c15b7c2077986da66fa96b98a",
+                "reference": "3709f3a2f22bd49c15b7c2077986da66fa96b98a",
                 "shasum": ""
             },
             "require": {
@@ -1273,7 +1273,7 @@
                 "issues": "https://github.com/inboxly/receiver/issues",
                 "source": "https://github.com/inboxly/receiver"
             },
-            "time": "2021-06-27T20:55:30+00:00"
+            "time": "2021-08-18T09:48:50+00:00"
         },
         {
             "name": "inboxly/text-processing",

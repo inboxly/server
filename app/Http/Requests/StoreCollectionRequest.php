@@ -18,7 +18,7 @@ class StoreCollectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => [
+            'name' => [
                 'required',
                 'min:1',
                 'max:20',

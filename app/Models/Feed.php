@@ -28,7 +28,7 @@ class Feed extends Model
      */
     protected $fillable = [
         'original_feed_id',
-        'title',
+        'name',
         'subscribed_at',
     ];
 

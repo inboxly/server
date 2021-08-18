@@ -20,10 +20,10 @@ class CreateOriginalEntriesTable extends Migration
             $table->foreignId('original_feed_id')->constrained();
             $table->string('external_id')->unique();
             $table->string('hash')->unique();
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->text('text')->nullable();
-            $table->string('link')->nullable();
+            $table->string('name');
+            $table->text('summary')->nullable();
+            $table->text('content')->nullable();
+            $table->string('url')->nullable();
             $table->string('image')->nullable();
             $table->json('author')->nullable();
             $table->timestamps(6);

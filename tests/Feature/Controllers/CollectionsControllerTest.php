@@ -45,7 +45,7 @@ class CollectionsControllerTest extends TestCase
             'data' => [
                 [
                     'id',
-                    'title',
+                    'name',
                 ]
             ],
         ]);
@@ -59,20 +59,20 @@ class CollectionsControllerTest extends TestCase
     {
         // Run
         $response = $this->asUser()->postJson('api/collections', [
-            'title' => 'new_collection',
+            'name' => 'new_collection',
         ]);
 
         // Asserts
         $response->assertCreated();
         $response->assertJson([
             'data' => [
-                'title' => 'new_collection',
+                'name' => 'new_collection',
             ]
         ]);
 
         $response->assertJsonStructure(['data' => [
             'id',
-            'title',
+            'name',
         ]]);
 
     }
@@ -86,19 +86,19 @@ class CollectionsControllerTest extends TestCase
         // Setup
         $collection = Collection::factory()->create([
             'user_id' => $this->user->getKey(),
-            'title' => 'title',
+            'name' => 'name',
         ]);
 
         // Run
         $response = $this->asUser()->putJson("api/collections/{$collection->getKey()}", [
-            'title' => 'renamed',
+            'name' => 'renamed',
         ]);
 
         // Asserts
         $response->assertNoContent();
         $this->assertDatabaseHas(Collection::newModelInstance()->getTable(), [
             'id' => $collection->getKey(),
-            'title' => 'renamed',
+            'name' => 'renamed',
         ]);
     }
 
@@ -110,19 +110,19 @@ class CollectionsControllerTest extends TestCase
     {
         // Setup
         $collection = Collection::factory()->create([
-            'title' => 'title',
+            'name' => 'name',
         ]);
 
         // Run
         $response = $this->asUser()->putJson("api/collections/{$collection->getKey()}", [
-            'title' => 'renamed',
+            'name' => 'renamed',
         ]);
 
         // Asserts
         $response->assertForbidden();
         $this->assertDatabaseHas(Collection::newModelInstance()->getTable(), [
             'id' => $collection->getKey(),
-            'title' => 'title',
+            'name' => 'name',
         ]);
     }
 

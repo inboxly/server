@@ -30,7 +30,7 @@ class FeedFactory extends Factory
         return [
             'user_id' => fn() => User::factory()->create()->getKey(),
             'original_feed_id' => fn() => OriginalFeed::factory()->create()->getKey(),
-            'title' => Str::ucfirst($this->faker->sentence(3)),
+            'name' => Str::ucfirst($this->faker->sentence(3)),
             'subscribed_at' => fn() => $this->generateDate(),
         ];
     }

@@ -47,7 +47,7 @@ class CategoriesControllerTest extends TestCase
             'data' => [
                 [
                     'id',
-                    'title',
+                    'name',
                 ]
             ],
         ]);
@@ -61,20 +61,20 @@ class CategoriesControllerTest extends TestCase
     {
         // Run
         $response = $this->asUser()->postJson('api/categories', [
-            'title' => 'new_category',
+            'name' => 'new_category',
         ]);
 
         // Asserts
         $response->assertCreated();
         $response->assertJson([
             'data' => [
-                'title' => 'new_category',
+                'name' => 'new_category',
             ]
         ]);
 
         $response->assertJsonStructure(['data' => [
             'id',
-            'title',
+            'name',
         ]]);
 
     }
@@ -88,19 +88,19 @@ class CategoriesControllerTest extends TestCase
         // Setup
         $category = Category::factory()->create([
             'user_id' => $this->user->getKey(),
-            'title' => 'title',
+            'name' => 'name',
         ]);
 
         // Run
         $response = $this->asUser()->putJson("api/categories/{$category->getKey()}", [
-            'title' => 'renamed',
+            'name' => 'renamed',
         ]);
 
         // Asserts
         $response->assertNoContent();
         $this->assertDatabaseHas(Category::newModelInstance()->getTable(), [
             'id' => $category->getKey(),
-            'title' => 'renamed',
+            'name' => 'renamed',
         ]);
     }
 
@@ -112,19 +112,19 @@ class CategoriesControllerTest extends TestCase
     {
         // Setup
         $category = Category::factory()->create([
-            'title' => 'title',
+            'name' => 'name',
         ]);
 
         // Run
         $response = $this->asUser()->putJson("api/categories/{$category->getKey()}", [
-            'title' => 'renamed',
+            'name' => 'renamed',
         ]);
 
         // Asserts
         $response->assertForbidden();
         $this->assertDatabaseHas(Category::newModelInstance()->getTable(), [
             'id' => $category->getKey(),
-            'title' => 'title',
+            'name' => 'name',
         ]);
     }
 
@@ -139,7 +139,7 @@ class CategoriesControllerTest extends TestCase
 
         $category = Category::factory()->create([
             'user_id' => $this->user->getKey(),
-            'title' => 'title',
+            'name' => 'name',
         ]);
 
         // Run
@@ -166,7 +166,7 @@ class CategoriesControllerTest extends TestCase
         $initialDefaultCategory = $this->user->defaultCategory;
 
         $category = Category::factory()->create([
-            'title' => 'title',
+            'name' => 'name',
         ]);
 
         // Run

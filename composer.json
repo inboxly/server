@@ -22,7 +22,7 @@
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.3.0",
-        "inboxly/receiver": "^0.1",
+        "inboxly/receiver": "^0.2",
         "inboxly/text-processing": "^0.1",
         "kevinrob/guzzle-cache-middleware": "^3.4",
         "laminas/laminas-diactoros": "^2.6",

@@ -21,10 +21,10 @@ class OriginalFeedResource extends JsonResource
     {
         return [
             'original_id' => $this->id,
-            'title' => $this->title,
-            'custom_title' => $this->title,
-            'description' => $this->description,
-            'link' => $this->link,
+            'name' => $this->name,
+            'custom_name' => $this->name,
+            'summary' => $this->summary,
+            'url' => $this->url,
             'image' => $this->image,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

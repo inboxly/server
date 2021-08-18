@@ -18,7 +18,7 @@ class UpdateCollectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => [
+            'name' => [
                 'min:1',
                 'max:20',
             ],

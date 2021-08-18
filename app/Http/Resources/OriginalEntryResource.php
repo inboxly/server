@@ -20,10 +20,10 @@ class OriginalEntryResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'title' => $this->title,
-            'description' => $this->description,
-            'text' => $this->text,
-            'link' => $this->link,
+            'name' => $this->name,
+            'summary' => $this->summary,
+            'content' => $this->content,
+            'url' => $this->url,
             'image' => $this->image,
             'author' => $this->author,
             'is_read' => false,
@@ -31,7 +31,7 @@ class OriginalEntryResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'feed' => $this->whenLoaded('originalFeed',
-                OriginalFeedResource::make($this->originalFeed->withoutRelations())->only(['title', 'author'])
+                OriginalFeedResource::make($this->originalFeed->withoutRelations())->only(['name', 'author'])
             ),
             'collections' => [],
         ];

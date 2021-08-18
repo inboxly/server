@@ -38,10 +38,10 @@ class OriginalEntry extends Model
     protected $fillable = [
         'original_feed_id',
         'external_id',
-        'title',
-        'description',
-        'text',
-        'link',
+        'name',
+        'summary',
+        'content',
+        'url',
         'image',
         'author',
         'created_at',
@@ -85,13 +85,13 @@ class OriginalEntry extends Model
     {
         return hash('sha256', join('', [
             $this->external_id,
-            $this->title,
-            $this->description,
-            $this->text,
-            $this->link,
+            $this->name,
+            $this->summary,
+            $this->content,
+            $this->url,
             $this->image,
             $this->author->name ?? '',
-            $this->author->link ?? '',
+            $this->author->url ?? '',
         ]));
     }
 
@@ -108,15 +108,15 @@ class OriginalEntry extends Model
             'original_feed_id' => $originalFeed->getKey(),
             'external_id' => $receiverEntry->externalId,
         ], [
-            'title' => $receiverEntry->title,
-            'description' => $receiverEntry->description,
-            'text' => $receiverEntry->text,
-            'link' => $receiverEntry->link,
+            'name' => $receiverEntry->name,
+            'summary' => $receiverEntry->summary,
+            'content' => $receiverEntry->content,
+            'url' => $receiverEntry->url,
             'image' => $receiverEntry->image,
             'author' => $receiverEntry->authorName
                 ? [
                     'name' => $receiverEntry->authorName,
-                    'link' => $receiverEntry->authorLink,
+                    'url' => $receiverEntry->authorUrl,
                 ]
                 : null,
             'created_at' => $receiverEntry->createdAt,

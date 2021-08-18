@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 return [
     'id',
-    'title',
-    'description',
-    'text',
-    'link',
+    'name',
+    'summary',
+    'content',
+    'url',
     'image',
     'author' => [
         'name',
         'image',
-        'link',
+        'url',
     ],
     'is_read',
     'is_saved',
@@ -20,9 +20,9 @@ return [
     'updated_at',
     'feed' => [
         'id',
-        'title',
-        'custom_title',
-        'link',
+        'name',
+        'custom_name',
+        'url',
         'image',
         'created_at',
         'updated_at',
@@ -30,7 +30,7 @@ return [
     'collections' => [
         [
             'id',
-            'title',
+            'name',
         ]
     ],
 ];

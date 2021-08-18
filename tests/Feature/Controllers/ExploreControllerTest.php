@@ -28,8 +28,8 @@ class ExploreControllerTest extends TestCase
 
         $response->assertJson(['data' => [
             [
-                'title' => 'KDE Neon',
-                'link' => 'https://www.reddit.com/r/kdeneon',
+                'name' => 'KDE Neon',
+                'url' => 'https://www.reddit.com/r/kdeneon',
             ]
         ]]);
 
@@ -56,8 +56,8 @@ class ExploreControllerTest extends TestCase
 
         $response->assertJson(['data' => [
             [
-                'title' => 'overview for alienth',
-                'link' => 'https://www.reddit.com/user/alienth',
+                'name' => 'overview for alienth',
+                'url' => 'https://www.reddit.com/user/alienth',
             ]
         ]]);
 
@@ -85,8 +85,8 @@ class ExploreControllerTest extends TestCase
 
         $response->assertJson(['data' => [
             [
-                'title' => 'Recent Commits to feed-io:main',
-                'link' => 'https://github.com/alexdebril/feed-io/commits/main',
+                'name' => 'Recent Commits to feed-io:main',
+                'url' => 'https://github.com/alexdebril/feed-io/commits/main',
             ]
         ]]);
 
@@ -114,8 +114,8 @@ class ExploreControllerTest extends TestCase
 
         $response->assertJson(['data' => [
             [
-                'title' => 'Luke Diebold',
-                'link' => 'https://www.youtube.com/channel/UCmRBQ7JshWJss0hZnj3K_Bg',
+                'name' => 'Luke Diebold',
+                'url' => 'https://www.youtube.com/channel/UCmRBQ7JshWJss0hZnj3K_Bg',
             ]
         ]]);
 

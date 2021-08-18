@@ -21,7 +21,7 @@ class CollectionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
+            'name' => $this->name,
         ];
     }
 }

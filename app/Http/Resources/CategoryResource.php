@@ -21,7 +21,7 @@ class CategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
+            'name' => $this->name,
             'is_default' => $this->is_default,
             'feeds' => SimpleFeedResource::collection(
                 $this->whenLoaded('feeds')

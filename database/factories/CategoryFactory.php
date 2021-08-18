@@ -27,7 +27,7 @@ class CategoryFactory extends Factory
     {
         return [
             'user_id' => fn() => User::factory()->create()->getKey(),
-            'title' => Str::ucfirst($this->faker->words(rand(1, 2), true)),
+            'name' => Str::ucfirst($this->faker->words(rand(1, 2), true)),
             'is_default' => false,
         ];
     }

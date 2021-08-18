@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
             /** @var \App\Models\Feed $feed */
             $feed = $user->feeds()->create([
                 'original_feed_id' => $originalFeed->id,
-                'title' => 'Lenta.ru',
+                'name' => 'Lenta.ru',
                 'subscribed_at' => now(),
             ]);
 
@@ -69,7 +69,7 @@ class UserSeeder extends Seeder
             ]);
 
             /** @var \App\Models\Category $category */
-            $category = $user->categories()->create(['title' => 'Youtube']);
+            $category = $user->categories()->create(['name' => 'Youtube']);
             $category->feeds()->attach($feed);
         }
     }

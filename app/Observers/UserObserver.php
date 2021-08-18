@@ -18,7 +18,7 @@ class UserObserver
     {
         // Create default category
         $user->categories()->create([
-            'title' => 'Main',
+            'name' => 'Main',
             'is_default' => true,
         ]);
     }

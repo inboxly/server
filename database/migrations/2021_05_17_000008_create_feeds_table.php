@@ -19,7 +19,7 @@ class CreateFeedsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('original_feed_id')->constrained();
-            $table->string('title')->nullable();
+            $table->string('name')->nullable();
             $table->timestamp('subscribed_at', 6)->nullable();
             $table->timestamps(6);
 

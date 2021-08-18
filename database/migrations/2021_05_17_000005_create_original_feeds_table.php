@@ -20,9 +20,9 @@ class CreateOriginalFeedsTable extends Migration
             $table->string('fetcher_key');
             $table->string('fetcher_feed_id');
             $table->json('parameters');
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->string('link')->nullable();
+            $table->string('name');
+            $table->text('summary')->nullable();
+            $table->string('url')->nullable();
             $table->string('image')->nullable();
             $table->string('author')->nullable();
             $table->string('language')->nullable();
