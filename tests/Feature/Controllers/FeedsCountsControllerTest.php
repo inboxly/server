@@ -15,7 +15,7 @@ class FeedsCountsControllerTest extends TestCase
 {
     /**
      * @test
-     * @see \App\Http\Controllers\FeedsCountsController::index()
+     * @see \App\Http\Controllers\FeedsCountsController::__invoke()
      */
     public function can_get_list_of_unread_counts_for_all_feeds(): void
     {

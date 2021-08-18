@@ -20,7 +20,7 @@ class CategoryEntriesController extends Controller
      * @return \Illuminate\Http\Resources\Json\ResourceCollection
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(Request $request, Category $category): ResourceCollection
+    public function __invoke(Request $request, Category $category): ResourceCollection
     {
         $this->authorize('view', $category);
 

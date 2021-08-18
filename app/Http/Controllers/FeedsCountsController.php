@@ -17,7 +17,7 @@ class FeedsCountsController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Resources\Json\ResourceCollection
      */
-    public function index(Request $request): ResourceCollection
+    public function __invoke(Request $request): ResourceCollection
     {
         /** @var \App\Models\User $user */
         $user = $request->user();

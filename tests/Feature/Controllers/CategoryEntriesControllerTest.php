@@ -24,7 +24,7 @@ class CategoryEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\CategoryEntriesController::index()
+     * @see \App\Http\Controllers\CategoryEntriesController::__invoke()
      */
     public function can_get_list_of_all_entries_in_category(): void
     {
@@ -59,7 +59,7 @@ class CategoryEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\CategoryEntriesController::index()
+     * @see \App\Http\Controllers\CategoryEntriesController::__invoke()
      */
     public function can_get_reversed_list_of_all_entries_in_category(): void
     {
@@ -94,7 +94,7 @@ class CategoryEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\CategoryEntriesController::index()
+     * @see \App\Http\Controllers\CategoryEntriesController::__invoke()
      */
     public function can_get_list_of_all_unread_entries_in_category(): void
     {
@@ -127,7 +127,7 @@ class CategoryEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\CategoryEntriesController::index()
+     * @see \App\Http\Controllers\CategoryEntriesController::__invoke()
      */
     public function can_get_reversed_list_of_all_unread_entries_in_category(): void
     {

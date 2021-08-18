@@ -13,7 +13,7 @@ class ExploreControllerTest extends TestCase
 {
     /**
      * @test
-     * @see \App\Http\Controllers\ExploreController::explore()
+     * @see \App\Http\Controllers\ExploreController::__invoke()
      */
     public function can_explore_feeds_from_reddit(): void
     {
@@ -39,9 +39,10 @@ class ExploreControllerTest extends TestCase
 
         $this->markTestIncomplete('Need improving test for use Mocks');
     }
+
     /**
      * @test
-     * @see \App\Http\Controllers\ExploreController::explore()
+     * @see \App\Http\Controllers\ExploreController::__invoke()
      */
     public function can_explore_feeds_from_reddit_by_query(): void
     {
@@ -70,7 +71,7 @@ class ExploreControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\ExploreController::explore()
+     * @see \App\Http\Controllers\ExploreController::__invoke()
      */
     public function can_explore_feeds_from_github(): void
     {
@@ -99,7 +100,7 @@ class ExploreControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\ExploreController::explore()
+     * @see \App\Http\Controllers\ExploreController::__invoke()
      */
     public function can_explore_feeds_from_youtube(): void
     {

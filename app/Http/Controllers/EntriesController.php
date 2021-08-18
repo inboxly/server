@@ -18,7 +18,7 @@ class EntriesController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Resources\Json\ResourceCollection
      */
-    public function index(Request $request): ResourceCollection
+    public function __invoke(Request $request): ResourceCollection
     {
         /** @var \Illuminate\Database\Eloquent\Builder $builder */
         $builder = $request->user()->entries()

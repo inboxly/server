@@ -23,7 +23,7 @@ class FeedEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\FeedEntriesController::index()
+     * @see \App\Http\Controllers\FeedEntriesController::__invoke()
      */
     public function can_get_list_of_all_entries_in_feed(): void
     {
@@ -58,7 +58,7 @@ class FeedEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\FeedEntriesController::index()
+     * @see \App\Http\Controllers\FeedEntriesController::__invoke()
      */
     public function cannot_get_list_of_entries_in_not_its_feed(): void
     {
@@ -74,7 +74,7 @@ class FeedEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\FeedEntriesController::index()
+     * @see \App\Http\Controllers\FeedEntriesController::__invoke()
      */
     public function can_get_reversed_list_of_all_entries_in_feed(): void
     {
@@ -109,7 +109,7 @@ class FeedEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\FeedEntriesController::index()
+     * @see \App\Http\Controllers\FeedEntriesController::__invoke()
      */
     public function can_get_list_of_all_unread_entries_in_feed(): void
     {
@@ -142,7 +142,7 @@ class FeedEntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\FeedEntriesController::index()
+     * @see \App\Http\Controllers\FeedEntriesController::__invoke()
      */
     public function can_get_reversed_list_of_all_unread_entries_in_feed(): void
     {

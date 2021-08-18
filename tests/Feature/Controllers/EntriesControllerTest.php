@@ -21,7 +21,7 @@ class EntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\EntriesController::index()
+     * @see \App\Http\Controllers\EntriesController::__invoke()
      */
     public function can_get_list_of_all_entries(): void
     {
@@ -49,7 +49,7 @@ class EntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\EntriesController::index()
+     * @see \App\Http\Controllers\EntriesController::__invoke()
      */
     public function can_get_reversed_list_of_all_entries(): void
     {
@@ -77,7 +77,7 @@ class EntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\EntriesController::index()
+     * @see \App\Http\Controllers\EntriesController::__invoke()
      */
     public function can_get_list_of_all_unread_entries(): void
     {
@@ -106,7 +106,7 @@ class EntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\EntriesController::index()
+     * @see \App\Http\Controllers\EntriesController::__invoke()
      */
     public function can_get_reversed_list_of_all_unread_entries(): void
     {
@@ -135,7 +135,7 @@ class EntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\EntriesController::index()
+     * @see \App\Http\Controllers\EntriesController::__invoke()
      */
     public function can_get_list_of_all_read_entries(): void
     {
@@ -164,7 +164,7 @@ class EntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\EntriesController::index()
+     * @see \App\Http\Controllers\EntriesController::__invoke()
      */
     public function can_get_reversed_list_of_all_read_entries(): void
     {
@@ -193,7 +193,7 @@ class EntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\EntriesController::index()
+     * @see \App\Http\Controllers\EntriesController::__invoke()
      */
     public function can_get_list_of_today_entries(): void
     {
@@ -233,7 +233,7 @@ class EntriesControllerTest extends TestCase
 
     /**
      * @test
-     * @see \App\Http\Controllers\EntriesController::index()
+     * @see \App\Http\Controllers\EntriesController::__invoke()
      */
     public function can_get_reversed_list_of_today_entries(): void
     {

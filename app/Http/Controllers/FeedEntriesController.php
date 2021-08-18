@@ -19,7 +19,7 @@ class FeedEntriesController extends Controller
      * @param \App\Models\Feed $feed
      * @return \Illuminate\Http\Resources\Json\ResourceCollection
      */
-    public function index(Request $request, Feed $feed): ResourceCollection
+    public function __invoke(Request $request, Feed $feed): ResourceCollection
     {
         /** @var \Illuminate\Database\Eloquent\Builder $builder */
         $builder = $feed->entries()

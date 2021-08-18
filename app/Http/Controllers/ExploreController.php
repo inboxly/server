@@ -27,7 +27,7 @@ class ExploreController extends Controller
      * @param string|null $explorerKey
      * @return \Illuminate\Http\Resources\Json\ResourceCollection
      */
-    public function explore(
+    public function __invoke(
         ExploreRequest $request,
         ExplorerManager $explorerManager,
         FetcherManager $fetcherManager,
