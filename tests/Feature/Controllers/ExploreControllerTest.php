@@ -17,6 +17,8 @@ class ExploreControllerTest extends TestCase
      */
     public function can_explore_feeds_from_reddit(): void
     {
+        $this->markTestSkipped('Test skipped because it use external service');
+
         // Run
         $response = $this->asUser()->postJson("api/explore", [
             'query' => 'https://www.reddit.com/r/kdeneon',
@@ -46,6 +48,8 @@ class ExploreControllerTest extends TestCase
      */
     public function can_explore_feeds_from_reddit_by_query(): void
     {
+        $this->markTestSkipped('Test skipped because it use external service');
+
         // Run
         $response = $this->asUser()->postJson("api/explore", [
             'query' => 'alienth',
@@ -75,6 +79,8 @@ class ExploreControllerTest extends TestCase
      */
     public function can_explore_feeds_from_github(): void
     {
+        $this->markTestSkipped('Test skipped because it use external service');
+
         // Run
         $response = $this->asUser()->postJson("api/explore", [
             'query' => 'https://github.com/alexdebril/feed-io/commits/main',
@@ -104,6 +110,8 @@ class ExploreControllerTest extends TestCase
      */
     public function can_explore_feeds_from_youtube(): void
     {
+        $this->markTestSkipped('Test skipped because it use external service');
+
         // Run
         $response = $this->asUser()->postJson("api/explore", [
             'query' => 'https://www.youtube.com/channel/UCmRBQ7JshWJss0hZnj3K_Bg',
@@ -129,7 +137,6 @@ class ExploreControllerTest extends TestCase
 
     protected function feedStructure(): array
     {
-        /** @noinspection PhpIncludeInspection */
         return require base_path('tests/fixtures/original-feed-structure.php');
     }
 }
