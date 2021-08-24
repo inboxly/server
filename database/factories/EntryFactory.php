@@ -6,10 +6,9 @@ namespace Database\Factories;
 
 use App\Models\Entry;
 use App\Models\Feed;
-use App\Models\OriginalEntry;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class EntryFactory extends Factory
 {
@@ -27,36 +26,35 @@ class EntryFactory extends Factory
      */
     public function definition(): array
     {
+        /** @var string $text */
+        $text = $this->faker->paragraphs(rand(3, 20), true);
+
         return [
-            'user_id' => fn() => User::factory()->create()->getKey(),
             'feed_id' => fn() => Feed::factory()->create()->getKey(),
-            'original_entry_id' => fn() => OriginalEntry::factory()->create()->getKey(),
-            'read_at' => null,
-            'saved_at' => null,
+            'external_id' => $this->faker->unique()->uuid,
+            'id' => fn(array $attrs) => sha1(join('', [$attrs['feed_id'], $this->faker->unique()->uuid])),
+            'name' => $this->faker->unique()->word,
+            'summary' => Str::limit($text, 300),
+            'content' => $text,
+            'url' => fn() => $this->faker->unique()->url,
+            'image' => "https://placeimg.com/640/480/{$this->faker->unique()->uuid}",
+            'author' => [
+                'name' => $this->faker->userName,
+                'image' => $this->faker->imageUrl(100, 100),
+                'url' => $this->faker->url,
+            ],
+            'created_at' => fn() => $this->generateDate(),
+            'updated_at' => fn(array $attr) => $attr['created_at'] ?? fn() => $this->generateDate(),
         ];
     }
 
     /**
-     * Add read state
-     *
-     * @return \Database\Factories\EntryFactory
+     * @return $this
      */
-    public function read(): EntryFactory
+    public function today(): self
     {
         return $this->state([
-            'read_at' => fn() => $this->generateDate(),
-        ]);
-    }
-
-    /**
-     * Add saved state
-     *
-     * @return \Database\Factories\EntryFactory
-     */
-    public function saved(): EntryFactory
-    {
-        return $this->state([
-            'saved_at' => fn() => $this->generateDate(),
+            'created_at' => fn() => $this->generateDateToday()
         ]);
     }
 
@@ -71,6 +69,24 @@ class EntryFactory extends Factory
         static $date;
 
         $date = $date ? $date->addMinute() : Carbon::now()->subWeeks(2);
+
+        return vsprintf('%s.%s', [
+            $date->format('Y-m-d H:i:s'),
+            $this->faker->randomNumber(6), // random microseconds
+        ]);
+    }
+
+    /**
+     * Generate today date with random microseconds
+     *
+     * @return string
+     */
+    protected function generateDateToday(): string
+    {
+        /** @var Carbon $date */
+        static $date;
+
+        $date = $date ? $date->addMinute() : Carbon::now();
 
         return vsprintf('%s.%s', [
             $date->format('Y-m-d H:i:s'),

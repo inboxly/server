@@ -23,7 +23,7 @@ class FeedsController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $feeds = $user->feeds()->with(['original', 'categories'])->get();
+        $feeds = $user->subscribedFeeds()->with(['userCategories'])->get();
 
         return FeedResource::collection($feeds);
     }
@@ -36,7 +36,7 @@ class FeedsController extends Controller
      */
     public function show(Feed $feed): JsonResource
     {
-        $feed->load(['original', 'categories']);
+        $feed->load(['userCategories']);
 
         return FeedResource::make($feed);
     }

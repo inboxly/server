@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Category;
-use App\Models\User;
+use App\Models\Entry;
+use App\Models\ReadState;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class CategoryFactory extends Factory
+class ReadStateFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Category::class;
+    protected $model = ReadState::class;
 
     /**
      * Define the model's default state.
@@ -25,9 +25,9 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => fn() => User::factory()->create()->getKey(),
-            'name' => $this->faker->unique()->word,
-            'type' => Category::TYPE_CUSTOM,
+            'entry_id' => fn() => Entry::factory()->create()->getKey(),
+            'feed_id' => fn(array $attrs) => $attrs['feed_id'],
+            'read_at' => null,
         ];
     }
 }

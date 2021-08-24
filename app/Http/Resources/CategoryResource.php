@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Models\Category;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -22,10 +23,10 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'is_default' => $this->is_default,
             'feeds' => SimpleFeedResource::collection(
                 $this->whenLoaded('feeds')
             ),
+            'is_customizable' => $this->type === Category::TYPE_CUSTOM,
         ];
     }
 }

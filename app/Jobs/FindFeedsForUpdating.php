@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Models\OriginalFeed;
+use App\Models\Feed;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,7 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 
-class FindOriginalFeedsForUpdating implements ShouldQueue
+class FindFeedsForUpdating implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -27,11 +27,11 @@ class FindOriginalFeedsForUpdating implements ShouldQueue
     {
         $now = Carbon::now()->toDateTimeString('microsecond');
 
-        OriginalFeed::query()
+        Feed::query()
             ->whereNotNull('next_update_at')
             ->where('next_update_at', '<=', $now)
-            ->each(function (OriginalFeed $originalFeed) use ($dispatcher) {
-                $dispatcher->dispatch(new UpdateOriginalFeed($originalFeed));
+            ->each(function (Feed $feed) use ($dispatcher) {
+                $dispatcher->dispatch(new UpdateFeed($feed));
             });
     }
 }

@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BatchCategoriesRequest;
 use App\Models\Feed;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class FeedCategoriesController extends Controller
 {
@@ -16,15 +17,17 @@ class FeedCategoriesController extends Controller
      * @param \App\Http\Requests\BatchCategoriesRequest $request
      * @param \App\Models\Feed $feed
      * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Throwable
      */
     public function store(BatchCategoriesRequest $request, Feed $feed): Response
     {
-        $this->authorize('update', $feed);
+        DB::beginTransaction();
 
-        $feed->categories()->syncWithoutDetaching(
-            $request->ids()
-        );
+        $feed->categories()->syncWithoutDetaching($request->ids());
+
+        $request->user()->subscribedFeeds()->syncWithoutDetaching($feed);
+
+        DB::commit();
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
@@ -35,15 +38,19 @@ class FeedCategoriesController extends Controller
      * @param \App\Http\Requests\BatchCategoriesRequest $request
      * @param \App\Models\Feed $feed
      * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Throwable
      */
     public function destroy(BatchCategoriesRequest $request, Feed $feed): Response
     {
-        $this->authorize('update', $feed);
+        DB::beginTransaction();
 
-        $feed->categories()->detach(
-            $request->ids()
-        );
+        $feed->categories()->detach($request->ids());
+
+        if ($feed->userCategories()->doesntExist()) {
+            $request->user()->subscribedFeeds()->detach($feed);
+        }
+
+        DB::commit();
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }

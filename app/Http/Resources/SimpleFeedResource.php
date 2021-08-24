@@ -20,9 +20,8 @@ class SimpleFeedResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->original_feed_id,
-            'name' => $this->name ?: $this->original->name,
-            'image' => $this->original->image,
+            'id' => $this->id,
+            'name' => $this->name,
         ];
     }
 }

@@ -7,7 +7,6 @@ namespace Database\Factories;
 use App\Models\Collection;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class CollectionFactory extends Factory
 {
@@ -27,7 +26,8 @@ class CollectionFactory extends Factory
     {
         return [
             'user_id' => fn() => User::factory()->create()->getKey(),
-            'name' => Str::ucfirst($this->faker->words(rand(1, 2), true)),
+            'name' => $this->faker->unique()->word,
+            'type' => Collection::TYPE_CUSTOM,
         ];
     }
 }

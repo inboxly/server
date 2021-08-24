@@ -15,8 +15,10 @@ class CollectionPolicy
 
     /**
      * Maximum number of entry collections that the user can create
+     *
+     * Max count of "custom" collection +1 for predefined "saved" collection
      */
-    public const MAX_COUNT_OF_COLLECTIONS = 10;
+    public const MAX_COUNT_OF_COLLECTIONS = 11;
 
     /**
      * Determine whether the user can view the model.
@@ -52,7 +54,7 @@ class CollectionPolicy
      */
     public function update(User $user, Collection $collection): bool
     {
-        return $collection->user_id === $user->id;
+        return $this->isUserCustomCollection($user, $collection);
     }
 
     /**
@@ -64,6 +66,26 @@ class CollectionPolicy
      */
     public function delete(User $user, Collection $collection): bool
     {
+        return $this->isUserCustomCollection($user, $collection);
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param \App\Models\Collection $collection
+     * @return bool
+     */
+    public function manageEntries(User $user, Collection $collection): bool
+    {
         return $collection->user_id === $user->id;
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param \App\Models\Collection $collection
+     * @return bool
+     */
+    private function isUserCustomCollection(User $user, Collection $collection): bool
+    {
+        return $collection->user_id === $user->id && $collection->type === Collection::TYPE_CUSTOM;
     }
 }

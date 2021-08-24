@@ -5,21 +5,16 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'users';
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +25,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'api_token',
     ];
 
     /**
@@ -40,7 +34,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'api_token',
         'remember_token',
     ];
 
@@ -54,13 +47,23 @@ class User extends Authenticatable
     ];
 
     /**
-     * Default category of feeds
+     * Collections owned by user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function collections(): HasMany
+    {
+        return $this->hasMany(Collection::class);
+    }
+
+    /**
+     * User's "saved" collection
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function defaultCategory(): HasOne
+    public function savedCollection(): HasOne
     {
-        return $this->hasOne(Category::class)->where('is_default', true);
+        return $this->hasOne(Collection::class)->where('type', Collection::TYPE_SAVED);
     }
 
     /**
@@ -74,32 +77,62 @@ class User extends Authenticatable
     }
 
     /**
-     * Feeds owned by user
+     * User's "main" category
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function feeds(): HasMany
+    public function mainCategory(): HasOne
     {
-        return $this->hasMany(Feed::class);
+        return $this->hasOne(Category::class)->where('type', Category::TYPE_MAIN);
     }
 
     /**
-     * Collections owned by user
+     * User's read states of entries
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function collections(): HasMany
+    public function readStates(): HasMany
     {
-        return $this->hasMany(Collection::class);
+        return $this->hasMany(ReadState::class);
     }
 
     /**
-     * Entries owned by user
+     * User's unread and read entries
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function entries(): HasMany
+    public function entries(): BelongsToMany
     {
-        return $this->hasMany(Entry::class);
+        return $this->belongsToMany(Entry::class, 'read_states');
+    }
+
+    /**
+     * Entries marked "unread" by user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function unreadEntries(): BelongsToMany
+    {
+        return $this->belongsToMany(Entry::class, 'read_states')->wherePivotNull('read_at');
+    }
+
+    /**
+     * Entries marked "read" by user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function readEntries(): BelongsToMany
+    {
+        return $this->belongsToMany(Entry::class, 'read_states')->wherePivotNotNull('read_at');
+    }
+
+    /**
+     * User's subscribed feeds
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function subscribedFeeds(): BelongsToMany
+    {
+        return $this->belongsToMany(Feed::class, 'subscriptions');
     }
 }

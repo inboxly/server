@@ -17,9 +17,10 @@ class CollectionsControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CollectionsController::index()
      */
-    public function can_get_list_of_collections(): void
+    public function user_can_get_list_of_collections(): void
     {
         // Setup
+        $savedCollection = $this->user->savedCollection;
         $collections = Collection::factory(2)->create(['user_id' => $this->user->getKey()]);
         $alienCollections = Collection::factory(2)->create(['user_id' => User::factory()->create()->getKey()]);
 
@@ -29,9 +30,10 @@ class CollectionsControllerTest extends TestCase
         // Asserts
         $response->assertOk();
 
-        $response->assertJsonCount(2, 'data');
+        $response->assertJsonCount(3, 'data');
 
         $response->assertJson(['data' => [
+            ['id' => $savedCollection->getKey()],
             ['id' => $collections->first()->getKey()],
             ['id' => $collections->last()->getKey()],
         ]]);
@@ -43,10 +45,7 @@ class CollectionsControllerTest extends TestCase
 
         $response->assertJsonStructure([
             'data' => [
-                [
-                    'id',
-                    'name',
-                ]
+                $this->collectionStructure(),
             ],
         ]);
     }
@@ -55,7 +54,7 @@ class CollectionsControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CollectionsController::store()
      */
-    public function can_create_new_collection(): void
+    public function user_can_create_new_collection(): void
     {
         // Run
         $response = $this->asUser()->postJson('api/collections', [
@@ -70,18 +69,16 @@ class CollectionsControllerTest extends TestCase
             ]
         ]);
 
-        $response->assertJsonStructure(['data' => [
-            'id',
-            'name',
-        ]]);
-
+        $response->assertJsonStructure([
+            'data' => $this->collectionStructure()
+        ]);
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\CollectionsController::update()
      */
-    public function can_rename_one_collection(): void
+    public function user_can_rename_own_custom_collection(): void
     {
         // Setup
         $collection = Collection::factory()->create([
@@ -106,7 +103,29 @@ class CollectionsControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CollectionsController::update()
      */
-    public function cannot_rename_not_its_collection(): void
+    public function user_cannot_rename_own_saved_collection(): void
+    {
+        // Setup
+        $collection = $this->user->savedCollection;
+
+        // Run
+        $response = $this->asUser()->putJson("api/collections/{$collection->getKey()}", [
+            'name' => 'renamed',
+        ]);
+
+        // Asserts
+        $response->assertForbidden();
+        $this->assertDatabaseHas(Collection::newModelInstance()->getTable(), [
+            'id' => $collection->getKey(),
+            'name' => 'Saved',
+        ]);
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\CollectionsController::update()
+     */
+    public function user_cannot_rename_not_its_custom_collection(): void
     {
         // Setup
         $collection = Collection::factory()->create([
@@ -130,7 +149,7 @@ class CollectionsControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CollectionsController::destroy()
      */
-    public function can_delete_one_collection(): void
+    public function user_can_delete_own_custom_collection(): void
     {
         // Setup
         $collection = Collection::factory()->create([
@@ -149,7 +168,24 @@ class CollectionsControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CollectionsController::destroy()
      */
-    public function cannot_delete_not_its_collection(): void
+    public function user_cannot_delete_own_saved_collection(): void
+    {
+        // Setup
+        $collection = $this->user->savedCollection;
+
+        // Run
+        $response = $this->asUser()->deleteJson("api/collections/{$collection->getKey()}");
+
+        // Asserts
+        $response->assertForbidden();
+        $this->assertDatabaseHas($collection->getTable(), ['id' => $collection->getKey()]);
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\CollectionsController::destroy()
+     */
+    public function user_cannot_delete_not_its_custom_collection(): void
     {
         // Setup
         $collection = Collection::factory()->create();
@@ -160,5 +196,17 @@ class CollectionsControllerTest extends TestCase
         // Asserts
         $response->assertForbidden();
         $this->assertDatabaseHas($collection->getTable(), ['id' => $collection->getKey()]);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function collectionStructure(): array
+    {
+        return [
+            'id',
+            'name',
+            'is_customizable',
+        ];
     }
 }

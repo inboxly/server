@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExploreRequest;
-use App\Http\Resources\OriginalFeedResource;
-use App\Models\OriginalEntry;
-use App\Models\OriginalFeed;
+use App\Http\Resources\FeedResource;
+use App\Models\Entry;
+use App\Models\Feed;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Inboxly\Receiver\Contracts\Parameters;
@@ -36,22 +36,23 @@ class ExploreController extends Controller
     {
         $results = $explorerManager->explore($request->exploreQuery(), $explorerKey);
 
-        $originalFeeds = Collection::make($results)
+        $feeds = Collection::make($results)
             ->map(fn(Parameters $parameters) => $fetcherManager->fetch($parameters))
             ->filter()
             ->map(function (ReceiverFeed $receiverFeed) {
-                $originalFeed = OriginalFeed::fromReceiverFeed($receiverFeed);
-                $originalEntries = Collection::make($receiverFeed->entries)
-                    ->sortBy(fn(ReceiverEntry $receiverEntry) => $receiverEntry->createdAt)
-                    ->map(function (ReceiverEntry $receiverEntry) use ($originalFeed) {
-                        return OriginalEntry::fromReceiverEntry($receiverEntry, $originalFeed)
-                            ->setRelation('originalFeed', $originalFeed);
-                    });
-                $originalFeed->setRelation('originalEntries', $originalEntries);
+                $feed = Feed::fromReceiverFeed($receiverFeed);
 
-                return $originalFeed;
+                if ($feed->wasRecentlyCreated) {
+                    Collection::make($receiverFeed->entries)
+                        ->sortBy(fn(ReceiverEntry $receiverEntry) => $receiverEntry->createdAt)
+                        ->each(function (ReceiverEntry $receiverEntry) use ($feed) {
+                            Entry::fromReceiverEntry($receiverEntry, $feed);
+                        });
+                }
+
+                return $feed->load(['userCategories']);
             });
 
-        return OriginalFeedResource::collection($originalFeeds);
+        return FeedResource::collection($feeds);
     }
 }

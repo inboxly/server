@@ -21,8 +21,6 @@ class BatchEntriesRequest extends FormRequest
      */
     public function rules(): array
     {
-        $table = Entry::newModelInstance()->getTable();
-
         return [
             'ids' => [
                 'required',
@@ -31,7 +29,7 @@ class BatchEntriesRequest extends FormRequest
                 'max:1000',
             ],
             'ids.*' => [
-                Rule::exists($table, 'id')->where('user_id', $this->user()->getKey()),
+                Rule::exists(Entry::newModelInstance()->getTable(), 'id'),
             ],
         ];
     }

@@ -18,19 +18,8 @@ return [
     'is_saved',
     'created_at',
     'updated_at',
-    'feed' => [
-        'id',
-        'name',
-        'custom_name',
-        'url',
-        'image',
-        'created_at',
-        'updated_at',
-    ],
+    'feed' => require base_path('tests/fixtures/feed-structure.php'),
     'collections' => [
-        [
-            'id',
-            'name',
-        ]
+        require base_path('tests/fixtures/collection-structure.php')
     ],
 ];

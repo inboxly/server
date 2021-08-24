@@ -25,7 +25,7 @@ class CategoriesController extends Controller
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
-        $user->load('categories.feeds.original');
+        $user->load('categories.feeds');
 
         return CategoryResource::collection($user->categories);
     }
@@ -71,6 +71,7 @@ class CategoriesController extends Controller
      * @param \App\Models\Category $category
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Throwable
      */
     public function destroy(Category $category): Response
     {

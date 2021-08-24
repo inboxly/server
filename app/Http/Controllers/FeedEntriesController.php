@@ -21,21 +21,25 @@ class FeedEntriesController extends Controller
      */
     public function __invoke(Request $request, Feed $feed): ResourceCollection
     {
-        /** @var \Illuminate\Database\Eloquent\Builder $builder */
-        $builder = $feed->entries()
-            ->with(['original', 'feed.original', 'collections'])
-            ->when(
-                $request->has('unreadOnly'),
-                fn(Builder $builder) => $builder->whereNull('read_at')
-            )
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if ($request->get('state') === 'unread') {
+            $builder = $user->unreadEntries()->where('entries.feed_id', $feed->getKey());
+        } else if ($request->get('state') === 'read') {
+            $builder = $user->readEntries()->where('entries.feed_id', $feed->getKey());
+        } else {
+            $builder = $feed->entries();
+        }
+
+        $entries = $builder
+            ->with(['userCollections', 'userReadState', 'feed.userCategories'])
             ->when(
                 $request->has('oldest'),
-                // todo: use date of creating an original entry instead
                 fn(Builder $builder) => $builder->oldest('created_at'),
                 fn(Builder $builder) => $builder->latest('created_at')
-            );
-
-        $entries = $builder->cursorPaginate()->withQueryString();
+            )
+            ->cursorPaginate();
 
         return EntryResource::collection($entries);
     }

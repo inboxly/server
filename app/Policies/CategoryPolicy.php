@@ -14,9 +14,11 @@ class CategoryPolicy
     use HandlesAuthorization;
 
     /**
-     * Maximum number of feed categories that the user can create
+     * Maximum number of entry categories that the user can create
+     *
+     * Max count of "custom" category +1 for predefined "main" category
      */
-    public const MAX_COUNT_OF_CATEGORIES = 10;
+    public const MAX_COUNT_OF_CATEGORIES = 11;
 
     /**
      * Determine whether the user can view the model.
@@ -52,7 +54,7 @@ class CategoryPolicy
      */
     public function update(User $user, Category $category): bool
     {
-        return $category->user_id === $user->id;
+        return $this->isUserCustomCategory($user, $category);
     }
 
     /**
@@ -64,6 +66,26 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category): bool
     {
+        return $this->isUserCustomCategory($user, $category);
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param \App\Models\Category $category
+     * @return bool
+     */
+    public function manageFeeds(User $user, Category $category): bool
+    {
         return $category->user_id === $user->id;
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param \App\Models\Category $category
+     * @return bool
+     */
+    private function isUserCustomCategory(User $user, Category $category): bool
+    {
+        return $category->user_id === $user->id && $category->type === Category::TYPE_CUSTOM;
     }
 }

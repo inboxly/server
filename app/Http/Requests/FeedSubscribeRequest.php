@@ -21,15 +21,14 @@ class FeedSubscribeRequest extends FormRequest
      */
     public function rules(): array
     {
-        $table = Category::newModelInstance()->getTable();
-
         return [
             'ids' => [
                 'array',
-                'min:1',
+                'max:100',
             ],
             'ids.*' => [
-                Rule::exists($table, 'id')->where('user_id', $this->user()->getKey()),
+                Rule::exists(Category::newModelInstance()->getTable(), 'id')
+                    ->where('user_id', $this->user()->getKey()),
             ],
         ];
     }

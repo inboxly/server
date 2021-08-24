@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Inboxly\Receiver\Entry as ReceiverEntry;
 
+/**
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany userCollections()
+ * @method \Illuminate\Database\Eloquent\Relations\HasOne userReadState()
+ * @property-read \App\Models\Collection[]|\Illuminate\Database\Eloquent\Collection|null $userCollections
+ * @property-read \App\Models\ReadState|null $userReadState
+ * @see \App\Http\Middleware\RegisterDynamicRelations::entryUserCollections()
+ * @see \App\Http\Middleware\RegisterDynamicRelations::entryUserReadState()
+ */
 class Entry extends Model
 {
     use HasFactory;
@@ -21,16 +30,32 @@ class Entry extends Model
     protected $table = 'entries';
 
     /**
-     * The attributes that are mass assignable.
+     * Indicates if the IDs are auto-incrementing.
      *
-     * @var string[]
+     * @var bool
      */
-    protected $fillable = [
-        'user_id',
-        'original_entry_id',
-        'read_at',
-        'saved_at',
-    ];
+    public $incrementing = false;
+
+    /**
+     * The "type" of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'strings';
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var string[]|bool
+     */
+    protected $guarded = [];
 
     /**
      * The attributes that should be cast.
@@ -38,8 +63,9 @@ class Entry extends Model
      * @var array
      */
     protected $casts = [
-        'read_at' => 'datetime',
-        'saved_at' => 'datetime',
+        'author' => 'object',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
@@ -50,13 +76,16 @@ class Entry extends Model
     protected $dateFormat = 'Y-m-d H:i:s.u';
 
     /**
-     * User - reader of this entry
+     * Perform any actions required after the model boots.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return void
      */
-    public function user(): BelongsTo
+    protected static function booted(): void
     {
-        return $this->belongsTo(User::class);
+        parent::booted();
+
+        $table = self::newModelInstance()->getTable();
+        static::addGlobalScope(fn(Builder $query) => $query->latest("$table.created_at"));
     }
 
     /**
@@ -70,22 +99,35 @@ class Entry extends Model
     }
 
     /**
-     * Collections in which this entry has been added
+     * Update or create OriginalEntry by mapping ReceiverEntry instance
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @param \Inboxly\Receiver\Entry $receiverEntry
+     * @param \App\Models\Feed $feed
+     * @return static
      */
-    public function collections(): BelongsToMany
+    public static function fromReceiverEntry(ReceiverEntry $receiverEntry, Feed $feed): self
     {
-        return $this->belongsToMany(Collection::class, 'collection_entry');
-    }
-
-    /**
-     * Original feed on the basis of which this is created
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function original(): BelongsTo
-    {
-        return $this->belongsTo(OriginalEntry::class, 'original_entry_id');
+        return self::updateOrCreate([
+            'id' => sha1(join('', [
+                $feed->getKey(),
+                $receiverEntry->externalId,
+            ])),
+        ], [
+            'feed_id' => $feed->getKey(),
+            'external_id' => $receiverEntry->externalId,
+            'name' => $receiverEntry->name,
+            'summary' => $receiverEntry->summary,
+            'content' => $receiverEntry->content,
+            'url' => $receiverEntry->url,
+            'image' => $receiverEntry->image,
+            'author' => $receiverEntry->authorName
+                ? [
+                    'name' => $receiverEntry->authorName,
+                    'url' => $receiverEntry->authorUrl,
+                ]
+                : null,
+            'created_at' => $receiverEntry->createdAt,
+            'updated_at' => $receiverEntry->updatedAt,
+        ]);
     }
 }

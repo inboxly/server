@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Models\Collection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -21,21 +22,30 @@ class EntryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->original->name,
-            'summary' => $this->original->summary,
-            'content' => $this->original->content,
-            'url' => $this->original->url,
-            'image' => $this->original->image,
-            'author' => $this->original->author,
-            'is_read' => (bool)$this->read_at,
-            'is_saved' => (bool)$this->saved_at,
-            'created_at' => $this->original->created_at,
-            'updated_at' => $this->original->updated_at,
+            'name' => $this->name,
+            'summary' => $this->summary,
+            'content' => $this->content,
+            'url' => $this->url,
+            'image' => $this->image,
+            'author' => $this->author,
+            'is_read' => (bool)$this->whenLoaded(
+                'userReadState',
+                fn() => $this->userReadState->read_at,
+            ),
+            'is_saved' => (bool)$this->whenLoaded(
+                'userCollections',
+                fn() => $this->userCollections->where('type', Collection::TYPE_SAVED)->isNotEmpty(),
+            ),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'feed' => FeedResource::make(
                 $this->whenLoaded('feed')
             ),
-            'collections' => CollectionResource::collection(
-                $this->whenLoaded('collections')
+            'collections' => $this->whenLoaded(
+                'userCollections',
+                fn() => CollectionResource::collection(
+                    $this->userCollections->where('type', Collection::TYPE_CUSTOM)
+                )
             ),
         ];
     }

@@ -6,7 +6,6 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 /** @method User user($guard = null) */
 class UpdateCategoryRequest extends FormRequest
@@ -23,10 +22,6 @@ class UpdateCategoryRequest extends FormRequest
                 'min:1',
                 'max:20',
             ],
-            'is_default' => [
-                'boolean',
-                Rule::in([true]),
-            ]
         ];
     }
 }

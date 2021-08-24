@@ -9,6 +9,7 @@ use App\Http\Resources\FeedResource;
 use App\Models\Category;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class CategoryFeedsController extends Controller
 {
@@ -23,7 +24,7 @@ class CategoryFeedsController extends Controller
     {
         $this->authorize('view', $category);
 
-        $category->load(['feeds.original', 'feeds.categories']);
+        $category->load(['feeds.userCategories']);
 
         return FeedResource::collection($category->feeds);
     }
@@ -31,16 +32,23 @@ class CategoryFeedsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Models\Category $category
      * @param \App\Http\Requests\BatchFeedsRequest $request
+     * @param \App\Models\Category $category
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Throwable
      */
-    public function store(Category $category, BatchFeedsRequest $request): Response
+    public function store(BatchFeedsRequest $request, Category $category): Response
     {
-        $this->authorize('update', $category);
+        $this->authorize('manageFeeds', $category);
+
+        DB::beginTransaction();
 
         $category->feeds()->syncWithoutDetaching($request->ids());
+
+        $request->user()->subscribedFeeds()->syncWithoutDetaching($request->ids());
+
+        DB::commit();
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
@@ -48,16 +56,23 @@ class CategoryFeedsController extends Controller
     /**
      * Remove the specified resources from storage.
      *
-     * @param \App\Models\Category $category
      * @param \App\Http\Requests\BatchFeedsRequest $request
+     * @param \App\Models\Category $category
      * @return \Illuminate\Http\Response
      * @throws \Exception
+     * @throws \Throwable
      */
-    public function destroy(Category $category, BatchFeedsRequest $request): Response
+    public function destroy(BatchFeedsRequest $request, Category $category): Response
     {
-        $this->authorize('update', $category);
+        $this->authorize('manageFeeds', $category);
+
+        DB::beginTransaction();
 
         $category->feeds()->detach($request->ids());
+
+        $request->user()->subscribedFeeds()->whereDoesntHave('userCategories')->detach($request->ids());
+
+        DB::commit();
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }

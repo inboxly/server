@@ -20,7 +20,7 @@ class FeedCountResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->original_feed_id,
+            'id' => $this->id,
             'entries_count' => $this->entries_count,
         ];
     }

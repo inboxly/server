@@ -22,11 +22,14 @@ class FeedsCountsController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $feeds = $user->feeds()
+        $feeds = $user->subscribedFeeds()
             ->withCount([
-                'entries' => fn(Builder $builder) => $builder->whereNull('read_at')
+                'entries' => fn(Builder $builder) => $builder->whereHas(
+                    'userReadState',
+                    fn(Builder $query) => $query->whereNull('read_at')
+                )
             ])
-            ->get(['feeds.original_feed_id']);
+            ->get(['id']);
 
         return FeedCountResource::collection($feeds);
     }

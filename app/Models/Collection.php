@@ -14,20 +14,17 @@ class Collection extends Model
     use HasFactory;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
+     * Possible types of collections
      */
-    protected $table = 'collections';
+    public const TYPE_SAVED = 'saved';
+    public const TYPE_CUSTOM = 'custom';
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that aren't mass assignable.
      *
-     * @var string[]
+     * @var string[]|bool
      */
-    protected $fillable = [
-        'name',
-    ];
+    protected $guarded = [];
 
     /**
      * User - owner of this collection
@@ -46,6 +43,6 @@ class Collection extends Model
      */
     public function entries(): BelongsToMany
     {
-        return $this->belongsToMany(Entry::class, 'collection_entry');
+        return $this->belongsToMany(Entry::class, 'collection_entries');
     }
 }

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Collection;
-use App\Models\OriginalFeed;
+use App\Models\Feed;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -35,42 +36,35 @@ class UserSeeder extends Seeder
     private function subscribeMain(User $user, array $urls): void
     {
         foreach ($urls as $url) {
-            /** @var OriginalFeed $originalFeed */
-            $originalFeed = OriginalFeed::factory()->create([
+            /** @var Feed $feed */
+            $feed = Feed::factory()->create([
                 'fetcher_key' => 'rss',
                 'fetcher_feed_id' => $url,
                 'parameters->url' => $url,
+                'next_update_at' => Carbon::now(),
             ]);
 
-            /** @var \App\Models\Feed $feed */
-            $feed = $user->feeds()->create([
-                'original_feed_id' => $originalFeed->id,
-                'subscribed_at' => now(),
-            ]);
-
-            $user->defaultCategory->feeds()->attach($feed);
+            $user->subscribedFeeds()->syncWithoutDetaching($feed);
+            $user->mainCategory->feeds()->syncWithoutDetaching($feed);
         }
     }
 
     private function subscribeYoutube(User $user, array $urls): void
     {
+        /** @var \App\Models\Category $category */
+        $category = $user->categories()->create(['name' => 'Youtube']);
+
         foreach ($urls as $url) {
-            /** @var OriginalFeed $originalFeed */
-            $originalFeed = OriginalFeed::factory()->create([
+            /** @var Feed $feed */
+            $feed = Feed::factory()->create([
                 'fetcher_key' => 'youtube_rss',
                 'fetcher_feed_id' => $url,
                 'parameters->url' => $url,
+                'next_update_at' => Carbon::now(),
             ]);
 
-            /** @var \App\Models\Feed $feed */
-            $feed = $user->feeds()->create([
-                'original_feed_id' => $originalFeed->id,
-                'subscribed_at' => now(),
-            ]);
-
-            /** @var \App\Models\Category $category */
-            $category = $user->categories()->create(['name' => 'Youtube']);
-            $category->feeds()->attach($feed);
+            $user->subscribedFeeds()->syncWithoutDetaching($feed);
+            $category->feeds()->syncWithoutDetaching($feed);
         }
     }
 }

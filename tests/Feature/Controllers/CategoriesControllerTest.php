@@ -17,10 +17,10 @@ class CategoriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CategoriesController::index()
      */
-    public function can_get_list_of_categories(): void
+    public function user_can_get_list_of_categories(): void
     {
         // Setup
-        $defaultCategory = $this->user->defaultCategory;
+        $mainCategory = $this->user->mainCategory;
         $categories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
         $alienCategories = Category::factory(2)->create(['user_id' => User::factory()->create()->getKey()]);
 
@@ -33,7 +33,7 @@ class CategoriesControllerTest extends TestCase
         $response->assertJsonCount(3, 'data');
 
         $response->assertJson(['data' => [
-            ['id' => $defaultCategory->getKey()],
+            ['id' => $mainCategory->getKey()],
             ['id' => $categories->first()->getKey()],
             ['id' => $categories->last()->getKey()],
         ]]);
@@ -45,10 +45,7 @@ class CategoriesControllerTest extends TestCase
 
         $response->assertJsonStructure([
             'data' => [
-                [
-                    'id',
-                    'name',
-                ]
+                $this->categoryStructure(),
             ],
         ]);
     }
@@ -57,7 +54,7 @@ class CategoriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CategoriesController::store()
      */
-    public function can_create_new_category(): void
+    public function user_can_create_new_category(): void
     {
         // Run
         $response = $this->asUser()->postJson('api/categories', [
@@ -72,18 +69,16 @@ class CategoriesControllerTest extends TestCase
             ]
         ]);
 
-        $response->assertJsonStructure(['data' => [
-            'id',
-            'name',
-        ]]);
-
+        $response->assertJsonStructure([
+            'data' => $this->categoryStructure()
+        ]);
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\CategoriesController::update()
      */
-    public function can_rename_one_category(): void
+    public function user_can_rename_own_custom_category(): void
     {
         // Setup
         $category = Category::factory()->create([
@@ -108,7 +103,29 @@ class CategoriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CategoriesController::update()
      */
-    public function cannot_rename_not_its_category(): void
+    public function user_cannot_rename_own_main_category(): void
+    {
+        // Setup
+        $category = $this->user->mainCategory;
+
+        // Run
+        $response = $this->asUser()->putJson("api/categories/{$category->getKey()}", [
+            'name' => 'renamed',
+        ]);
+
+        // Asserts
+        $response->assertForbidden();
+        $this->assertDatabaseHas(Category::newModelInstance()->getTable(), [
+            'id' => $category->getKey(),
+            'name' => 'Main',
+        ]);
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\CategoriesController::update()
+     */
+    public function user_cannot_rename_not_its_custom_category(): void
     {
         // Setup
         $category = Category::factory()->create([
@@ -126,68 +143,13 @@ class CategoriesControllerTest extends TestCase
             'id' => $category->getKey(),
             'name' => 'name',
         ]);
-    }
-
-    /**
-     * @test
-     * @see \App\Http\Controllers\CategoriesController::update()
-     */
-    public function can_mark_default_one_category(): void
-    {
-        // Setup
-        $initialDefaultCategory = $this->user->defaultCategory;
-
-        $category = Category::factory()->create([
-            'user_id' => $this->user->getKey(),
-            'name' => 'name',
-        ]);
-
-        // Run
-        $response = $this->asUser()->putJson("api/categories/{$category->getKey()}", [
-            'is_default' => true,
-        ]);
-
-        // Asserts
-        $response->assertNoContent();
-        $this->assertDatabaseHas(Category::newModelInstance()->getTable(), [
-            'id' => $category->getKey(),
-            'is_default' => true,
-        ]);
-        $this->assertFalse($initialDefaultCategory->fresh()->is_default);
-    }
-
-    /**
-     * @test
-     * @see \App\Http\Controllers\CategoriesController::update()
-     */
-    public function cannot_mark_default_not_its_category(): void
-    {
-        // Setup
-        $initialDefaultCategory = $this->user->defaultCategory;
-
-        $category = Category::factory()->create([
-            'name' => 'name',
-        ]);
-
-        // Run
-        $response = $this->asUser()->putJson("api/categories/{$category->getKey()}", [
-            'is_default' => true,
-        ]);
-
-        // Asserts
-        $response->assertForbidden();
-        $this->assertDatabaseHas(Category::newModelInstance()->getTable(), [
-            'id' => $category->getKey(),
-            'is_default' => false,
-        ]);
-        $this->assertTrue($initialDefaultCategory->fresh()->is_default);
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\CategoriesController::destroy()
      */
-    public function can_delete_one_category(): void
+    public function user_can_delete_own_custom_category(): void
     {
         // Setup
         $category = Category::factory()->create([
@@ -206,7 +168,24 @@ class CategoriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CategoriesController::destroy()
      */
-    public function cannot_delete_not_its_category(): void
+    public function user_cannot_delete_own_main_category(): void
+    {
+        // Setup
+        $category = $this->user->mainCategory;
+
+        // Run
+        $response = $this->asUser()->deleteJson("api/categories/{$category->getKey()}");
+
+        // Asserts
+        $response->assertForbidden();
+        $this->assertDatabaseHas($category->getTable(), ['id' => $category->getKey()]);
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\CategoriesController::destroy()
+     */
+    public function user_cannot_delete_not_its_custom_category(): void
     {
         // Setup
         $category = Category::factory()->create();
@@ -217,5 +196,17 @@ class CategoriesControllerTest extends TestCase
         // Asserts
         $response->assertForbidden();
         $this->assertDatabaseHas($category->getTable(), ['id' => $category->getKey()]);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function categoryStructure(): array
+    {
+        return [
+            'id',
+            'name',
+            'is_customizable',
+        ];
     }
 }

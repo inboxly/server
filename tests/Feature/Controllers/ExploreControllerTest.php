@@ -15,7 +15,7 @@ class ExploreControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\ExploreController::__invoke()
      */
-    public function can_explore_feeds_from_reddit(): void
+    public function user_can_explore_feeds_from_reddit(): void
     {
         $this->markTestSkipped('Test skipped because it use external service');
 
@@ -38,15 +38,13 @@ class ExploreControllerTest extends TestCase
         $response->assertJsonStructure(['data' => [
             $this->feedStructure()
         ]]);
-
-        $this->markTestIncomplete('Need improving test for use Mocks');
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\ExploreController::__invoke()
      */
-    public function can_explore_feeds_from_reddit_by_query(): void
+    public function user_can_explore_feeds_from_reddit_by_query(): void
     {
         $this->markTestSkipped('Test skipped because it use external service');
 
@@ -69,15 +67,13 @@ class ExploreControllerTest extends TestCase
         $response->assertJsonStructure(['data' => [
             $this->feedStructure()
         ]]);
-
-        $this->markTestIncomplete('Need improving test for use Mocks');
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\ExploreController::__invoke()
      */
-    public function can_explore_feeds_from_github(): void
+    public function user_can_explore_feeds_from_github(): void
     {
         $this->markTestSkipped('Test skipped because it use external service');
 
@@ -100,15 +96,13 @@ class ExploreControllerTest extends TestCase
         $response->assertJsonStructure(['data' => [
             $this->feedStructure()
         ]]);
-
-        $this->markTestIncomplete('Need improving test for use Mocks');
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\ExploreController::__invoke()
      */
-    public function can_explore_feeds_from_youtube(): void
+    public function user_can_explore_feeds_from_youtube(): void
     {
         $this->markTestSkipped('Test skipped because it use external service');
 
@@ -131,12 +125,10 @@ class ExploreControllerTest extends TestCase
         $response->assertJsonStructure(['data' => [
             $this->feedStructure()
         ]]);
-
-        $this->markTestIncomplete('Need improving test for use Mocks');
     }
 
     protected function feedStructure(): array
     {
-        return require base_path('tests/fixtures/original-feed-structure.php');
+        return require base_path('tests/fixtures/feed-structure.php');
     }
 }

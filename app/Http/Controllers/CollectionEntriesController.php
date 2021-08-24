@@ -20,55 +20,49 @@ class CollectionEntriesController extends Controller
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Collection $collection
      * @return \Illuminate\Http\Resources\Json\ResourceCollection
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(Request $request, Collection $collection): ResourceCollection
     {
-        $this->authorize('view', $collection);
-
-        /** @var \Illuminate\Database\Eloquent\Builder $builder */
-        $builder = $collection->entries()
-            ->with(['original', 'feed.original', 'collections'])
+        $entries = $collection->entries()
+            ->with(['userCollections', 'userReadState', 'feed.userCategories'])
             ->when(
                 $request->has('oldest'),
-                // todo: use date of creating an original entry instead
                 fn(Builder $builder) => $builder->oldest('created_at'),
                 fn(Builder $builder) => $builder->latest('created_at')
-            );
-
-        $entries = $builder->cursorPaginate()->withQueryString();
+            )
+            ->cursorPaginate();
 
         return EntryResource::collection($entries);
     }
 
     /**
-     * @param \App\Models\Collection $collection
+     * Store a newly created resource in storage.
+     *
      * @param \App\Http\Requests\BatchEntriesRequest $request
+     * @param \App\Models\Collection $collection
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function store(Collection $collection, BatchEntriesRequest $request): Response
+    public function store(BatchEntriesRequest $request, Collection $collection): Response
     {
-        $this->authorize('update', $collection);
+        $this->authorize('manageEntries', $collection);
 
-        $collection->entries()->syncWithoutDetaching(
-            $request->ids()
-        );
+        $collection->entries()->syncWithoutDetaching($request->ids());
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
-     * Remove the specified resources from storage.
+     * Remove the specified resource from storage.
      *
-     * @param \App\Models\Collection $collection
      * @param \App\Http\Requests\BatchEntriesRequest $request
+     * @param \App\Models\Collection $collection
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function destroy(Collection $collection, BatchEntriesRequest $request): Response
+    public function destroy(BatchEntriesRequest $request, Collection $collection): Response
     {
-        $this->authorize('update', $collection);
+        $this->authorize('manageEntries', $collection);
 
         $collection->entries()->detach($request->ids());
 

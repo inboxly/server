@@ -20,16 +20,15 @@ class FeedResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->original_feed_id,
-            'name' => $this->original->name,
-            'custom_name' => $this->name,
-            'summary' => $this->original->summary,
-            'url' => $this->original->url,
-            'image' => $this->original->image,
+            'id' => $this->id,
+            'name' => $this->name,
+            'summary' => $this->summary,
+            'url' => $this->url,
+            'image' => $this->image,
             'created_at' => $this->created_at,
-            'updated_at' => $this->original->updated_at,
+            'updated_at' => $this->updated_at,
             'categories' => CategoryResource::collection(
-                $this->whenLoaded('categories')
+                $this->whenLoaded('userCategories')
             ),
         ];
     }

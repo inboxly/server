@@ -24,25 +24,29 @@ class CategoryEntriesController extends Controller
     {
         $this->authorize('view', $category);
 
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if ($request->get('state') === 'unread') {
+            $builder = $user->unreadEntries();
+        } else if ($request->get('state') === 'read') {
+            $builder = $user->readEntries();
+        } else {
+            $builder = $user->entries();
+        }
+
         $feedsIds = $category->feeds()->pluck('feeds.id');
 
-        /** @var \Illuminate\Database\Eloquent\Builder $builder */
-        $builder = $request->user()->entries()
-            ->with(['original', 'feed.original', 'collections'])
-            ->whereIn('feed_id', $feedsIds)
-            ->when(
-                $request->has('unreadOnly'),
-                fn(Builder $builder) => $builder->whereNull('read_at')
-            )
+        $entries = $builder
+            ->whereIn('entries.feed_id', $feedsIds)
+            ->with(['userCollections', 'userReadState', 'feed.userCategories'])
             ->when(
                 $request->has('oldest'),
-                // todo: use date of creating an original entry instead
                 fn(Builder $builder) => $builder->oldest('created_at'),
                 fn(Builder $builder) => $builder->latest('created_at')
-            );
+            )
+            ->cursorPaginate();
 
-        $entries = $builder->cursorPaginate()->withQueryString();
-
-        return EntryResource::collection($entries);
+        return EntryResource::collection($entries)->preserveQuery();
     }
 }

@@ -14,29 +14,23 @@
     ],
     "require": {
         "php": "^8.0",
-        "ext-dom": "*",
-        "ext-libxml": "*",
-        "debril/feed-io": "^5.0",
-        "embed/embed": "^4.3",
-        "ezyang/htmlpurifier": "^4.13",
-        "fideloper/proxy": "^4.4",
+        "ext-pdo": "*",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.3.0",
-        "inboxly/receiver": "^0.2",
-        "inboxly/text-processing": "^0.1",
-        "kevinrob/guzzle-cache-middleware": "^3.4",
-        "laminas/laminas-diactoros": "^2.6",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "inboxly/receiver": "^0.2.0",
         "laravel/framework": "^8.54",
-        "laravel/tinker": "^2.6"
+        "laravel/sanctum": "^2.11",
+        "laravel/tinker": "^2.5"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",
         "doctrine/dbal": "^3.1",
-        "facade/ignition": "^2.11",
-        "fakerphp/faker": "^1.15",
-        "mockery/mockery": "^1.4.3",
-        "nunomaduro/collision": "^5.8",
-        "phpunit/phpunit": "^9.5.6"
+        "facade/ignition": "^2.5",
+        "fakerphp/faker": "^1.9.1",
+        "laravel/sail": "^1.0.1",
+        "mockery/mockery": "^1.4.2",
+        "nunomaduro/collision": "^5.0",
+        "phpunit/phpunit": "^9.3.3"
     },
     "autoload": {
         "psr-4": {
@@ -54,6 +48,11 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

@@ -6,7 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOriginalEntriesTable extends Migration
+class CreateEntriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,11 +15,11 @@ class CreateOriginalEntriesTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('original_entries', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('original_feed_id')->constrained();
+        Schema::create('entries', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('feed_id');
+            $table->foreign('feed_id')->references('id')->on('feeds')->cascadeOnDelete();
             $table->string('external_id')->unique();
-            $table->string('hash')->unique();
             $table->string('name');
             $table->text('summary')->nullable();
             $table->text('content')->nullable();
@@ -37,6 +37,6 @@ class CreateOriginalEntriesTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('original_entries');
+        Schema::dropIfExists('entries');
     }
 }

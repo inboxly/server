@@ -26,7 +26,7 @@ class CategoryEntriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CategoryEntriesController::__invoke()
      */
-    public function can_get_list_of_all_entries_in_category(): void
+    public function user_can_get_list_of_all_entries_in_category(): void
     {
         // Setup
         $this->prepareEntries();
@@ -39,17 +39,17 @@ class CategoryEntriesControllerTest extends TestCase
         $response->assertJsonCount(4, 'data');
 
         $response->assertJson(['data' => [
-            ['id' => $this->unreadEntries->last()->getKey()],
-            ['id' => $this->unreadEntries->first()->getKey()],
-            ['id' => $this->readEntries->last()->getKey()],
-            ['id' => $this->readEntries->first()->getKey()],
+            ['id' => $this->unreadEntries->last()->id],
+            ['id' => $this->unreadEntries->first()->id],
+            ['id' => $this->readEntries->last()->id],
+            ['id' => $this->readEntries->first()->id],
         ]]);
 
         $response->assertJsonMissing(['data' => [
-            ['id' => $this->otherUnreadEntries->last()->getKey()],
-            ['id' => $this->otherUnreadEntries->first()->getKey()],
-            ['id' => $this->otherReadEntries->last()->getKey()],
-            ['id' => $this->otherReadEntries->first()->getKey()],
+            ['id' => $this->otherUnreadEntries->last()->id],
+            ['id' => $this->otherUnreadEntries->first()->id],
+            ['id' => $this->otherReadEntries->last()->id],
+            ['id' => $this->otherReadEntries->first()->id],
         ]]);
 
         $response->assertJsonStructure(['data' => [
@@ -61,7 +61,7 @@ class CategoryEntriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CategoryEntriesController::__invoke()
      */
-    public function can_get_reversed_list_of_all_entries_in_category(): void
+    public function user_can_get_reversed_list_of_all_entries_in_category(): void
     {
         // Setup
         $this->prepareEntries();
@@ -74,17 +74,17 @@ class CategoryEntriesControllerTest extends TestCase
         $response->assertJsonCount(4, 'data');
 
         $response->assertJson(['data' => [
-            ['id' => $this->readEntries->first()->getKey()],
-            ['id' => $this->readEntries->last()->getKey()],
-            ['id' => $this->unreadEntries->first()->getKey()],
-            ['id' => $this->unreadEntries->last()->getKey()],
+            ['id' => $this->readEntries->first()->id],
+            ['id' => $this->readEntries->last()->id],
+            ['id' => $this->unreadEntries->first()->id],
+            ['id' => $this->unreadEntries->last()->id],
         ]]);
 
         $response->assertJsonMissing(['data' => [
-            ['id' => $this->otherReadEntries->first()->getKey()],
-            ['id' => $this->otherReadEntries->last()->getKey()],
-            ['id' => $this->otherUnreadEntries->first()->getKey()],
-            ['id' => $this->otherUnreadEntries->last()->getKey()],
+            ['id' => $this->otherReadEntries->first()->id],
+            ['id' => $this->otherReadEntries->last()->id],
+            ['id' => $this->otherUnreadEntries->first()->id],
+            ['id' => $this->otherUnreadEntries->last()->id],
         ]]);
 
         $response->assertJsonStructure(['data' => [
@@ -96,28 +96,28 @@ class CategoryEntriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CategoryEntriesController::__invoke()
      */
-    public function can_get_list_of_all_unread_entries_in_category(): void
+    public function user_can_get_list_of_all_unread_entries_in_category(): void
     {
         $this->prepareEntries();
 
-        $response = $this->asUser()->getJson("api/categories/{$this->category->id}/entries?unreadOnly=1");
+        $response = $this->asUser()->getJson("api/categories/{$this->category->id}/entries?state=unread");
 
         // Asserts
         $response->assertOk();
         $response->assertJsonCount(2, 'data');
 
         $response->assertJson(['data' => [
-            ['id' => $this->unreadEntries->last()->getKey()],
-            ['id' => $this->unreadEntries->first()->getKey()],
+            ['id' => $this->unreadEntries->last()->id],
+            ['id' => $this->unreadEntries->first()->id],
         ]]);
 
         $response->assertJsonMissing(['data' => [
-            ['id' => $this->readEntries->last()->getKey()],
-            ['id' => $this->readEntries->first()->getKey()],
-            ['id' => $this->otherUnreadEntries->last()->getKey()],
-            ['id' => $this->otherUnreadEntries->first()->getKey()],
-            ['id' => $this->otherReadEntries->last()->getKey()],
-            ['id' => $this->otherReadEntries->first()->getKey()],
+            ['id' => $this->readEntries->last()->id],
+            ['id' => $this->readEntries->first()->id],
+            ['id' => $this->otherUnreadEntries->last()->id],
+            ['id' => $this->otherUnreadEntries->first()->id],
+            ['id' => $this->otherReadEntries->last()->id],
+            ['id' => $this->otherReadEntries->first()->id],
         ]]);
 
         $response->assertJsonStructure(['data' => [
@@ -129,28 +129,28 @@ class CategoryEntriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CategoryEntriesController::__invoke()
      */
-    public function can_get_reversed_list_of_all_unread_entries_in_category(): void
+    public function user_can_get_reversed_list_of_all_unread_entries_in_category(): void
     {
         $this->prepareEntries();
 
-        $response = $this->asUser()->getJson("api/categories/{$this->category->id}/entries?unreadOnly=1&oldest=1");
+        $response = $this->asUser()->getJson("api/categories/{$this->category->id}/entries?state=unread&oldest=1");
 
         // Asserts
         $response->assertOk();
         $response->assertJsonCount(2, 'data');
 
         $response->assertJson(['data' => [
-            ['id' => $this->unreadEntries->first()->getKey()],
-            ['id' => $this->unreadEntries->last()->getKey()],
+            ['id' => $this->unreadEntries->first()->id],
+            ['id' => $this->unreadEntries->last()->id],
         ]]);
 
         $response->assertJsonMissing(['data' => [
-            ['id' => $this->otherReadEntries->first()->getKey()],
-            ['id' => $this->otherReadEntries->last()->getKey()],
-            ['id' => $this->otherUnreadEntries->first()->getKey()],
-            ['id' => $this->otherUnreadEntries->last()->getKey()],
-            ['id' => $this->readEntries->first()->getKey()],
-            ['id' => $this->readEntries->last()->getKey()],
+            ['id' => $this->otherReadEntries->first()->id],
+            ['id' => $this->otherReadEntries->last()->id],
+            ['id' => $this->otherUnreadEntries->first()->id],
+            ['id' => $this->otherUnreadEntries->last()->id],
+            ['id' => $this->readEntries->first()->id],
+            ['id' => $this->readEntries->last()->id],
         ]]);
 
         $response->assertJsonStructure(['data' => [
@@ -158,40 +158,79 @@ class CategoryEntriesControllerTest extends TestCase
         ]]);
     }
 
-
-    /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
     protected function prepareEntries()
     {
-        $categories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
-
         // Main models
-        $feed = Feed::factory()->create(['user_id' => $this->user->getKey()]);
-        $this->readEntries = Entry::factory(2)->read()->create([
-            'user_id' => $this->user->getKey(),
+        $categories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
+        $feed = Feed::factory()->create();
+        $this->user->subscribedFeeds()->syncWithoutDetaching($feed);
+
+        // Read Entries
+        $this->readEntries = Entry::factory(2)->create([
             'feed_id' => $feed->getKey(),
         ]);
+        $this->user->entries()->attach($this->readEntries->first()->id, [
+            'feed_id' => $this->readEntries->first()->feed_id,
+            'read_at' => now()
+        ]);
+        $this->user->entries()->attach($this->readEntries->last()->id, [
+            'feed_id' => $this->readEntries->last()->feed_id,
+            'read_at' => now()
+        ]);
+
+        // Unread Entries
         $this->unreadEntries = Entry::factory(2)->create([
-            'user_id' => $this->user->getKey(),
             'feed_id' => $feed->getKey(),
         ]);
-        $this->category = $categories->first();
-        $this->category->feeds()->sync($feed);
+        $this->user->entries()->attach($this->unreadEntries->first()->id, [
+            'feed_id' => $this->unreadEntries->first()->feed_id,
+            'read_at' => null
+        ]);
+        $this->user->entries()->attach($this->unreadEntries->last()->id, [
+            'feed_id' => $this->unreadEntries->last()->feed_id,
+            'read_at' => null
+        ]);
 
         /** @var Collection $collection */
         $collection = Collection::factory()->create(['user_id' => $this->user->getKey()]);
         $collection->entries()->syncWithoutDetaching($this->readEntries);
         $collection->entries()->syncWithoutDetaching($this->unreadEntries);
 
+        // Category feeds
+        $this->category = $categories->first();
+        $this->category->feeds()->sync($feed);
+
         // Other models
-        $otherFeed = Feed::factory()->create(['user_id' => $this->user->getKey()]);
-        $this->otherReadEntries = Entry::factory(2)->read()->create([
-            'user_id' => $this->user->getKey(),
+        $otherFeed = Feed::factory()->create();
+        $this->user->subscribedFeeds()->syncWithoutDetaching($otherFeed);
+
+        // Other Read Entries
+        $this->otherReadEntries = Entry::factory(2)->create([
             'feed_id' => $otherFeed->getKey(),
         ]);
+        $this->user->entries()->attach($this->otherReadEntries->first()->id, [
+            'feed_id' => $this->otherReadEntries->first()->feed_id,
+            'read_at' => now()
+        ]);
+        $this->user->entries()->attach($this->otherReadEntries->last()->id, [
+            'feed_id' => $this->otherReadEntries->last()->feed_id,
+            'read_at' => now()
+        ]);
+
+        // Other Unread Entries
         $this->otherUnreadEntries = Entry::factory(2)->create([
-            'user_id' => $this->user->getKey(),
             'feed_id' => $otherFeed->getKey(),
         ]);
+        $this->user->entries()->attach($this->otherUnreadEntries->first()->id, [
+            'feed_id' => $this->otherUnreadEntries->first()->feed_id,
+            'read_at' => null
+        ]);
+        $this->user->entries()->attach($this->otherUnreadEntries->last()->id, [
+            'feed_id' => $this->otherUnreadEntries->last()->feed_id,
+            'read_at' => null
+        ]);
+
+        // Other Category Feeds
         /** @var Category $otherCategory */
         $otherCategory = $categories->last();
         $otherCategory->feeds()->sync($otherFeed);
@@ -199,7 +238,6 @@ class CategoryEntriesControllerTest extends TestCase
 
     protected function entryStructure(): array
     {
-        /** @noinspection PhpIncludeInspection */
         return require base_path('tests/fixtures/entry-structure.php');
     }
 }

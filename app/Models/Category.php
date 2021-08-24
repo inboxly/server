@@ -14,30 +14,17 @@ class Category extends Model
     use HasFactory;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
+     * Possible types of categories
      */
-    protected $table = 'categories';
+    public const TYPE_MAIN = 'main';
+    public const TYPE_CUSTOM = 'custom';
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that aren't mass assignable.
      *
-     * @var string[]
+     * @var string[]|bool
      */
-    protected $fillable = [
-        'name',
-        'is_default',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'is_default' => 'boolean',
-    ];
+    protected $guarded = [];
 
     /**
      * User - owner of this category
@@ -56,6 +43,6 @@ class Category extends Model
      */
     public function feeds(): BelongsToMany
     {
-        return $this->belongsToMany(Feed::class, 'category_feed');
+        return $this->belongsToMany(Feed::class, 'category_feeds');
     }
 }

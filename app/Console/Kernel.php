@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console;
 
-use App\Jobs\FindOriginalFeedsForUpdating;
+use App\Jobs\FindFeedsForUpdating;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->job(new FindOriginalFeedsForUpdating())->everyMinute();
+        $schedule->job(new FindFeedsForUpdating())->everyMinute();
     }
 
     /**

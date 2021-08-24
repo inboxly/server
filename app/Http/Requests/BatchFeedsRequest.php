@@ -21,8 +21,6 @@ class BatchFeedsRequest extends FormRequest
      */
     public function rules(): array
     {
-        $table = Feed::newModelInstance()->getTable();
-
         return [
             'ids' => [
                 'required',
@@ -31,7 +29,7 @@ class BatchFeedsRequest extends FormRequest
                 'max:1000',
             ],
             'ids.*' => [
-                Rule::exists($table, 'original_feed_id')->where('user_id', $this->user()->getKey()),
+                Rule::exists(Feed::newModelInstance()->getTable(), 'id'),
             ],
         ];
     }
@@ -43,10 +41,6 @@ class BatchFeedsRequest extends FormRequest
      */
     public function ids(): array
     {
-        return Feed::query()
-            ->where('user_id', $this->user()->getKey())
-            ->whereIn('original_feed_id', $this->input('ids', []))
-            ->pluck('id')
-            ->toArray();
+        return $this->input('ids', []);
     }
 }

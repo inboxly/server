@@ -19,89 +19,112 @@ class FeedCategoriesControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\FeedCategoriesController::store()
      */
-    public function can_add_some_categories_to_feed(): void
+    public function user_can_add_own_custom_categories_to_feed(): void
     {
         // Setup
         /** @var Feed $feed */
-        $feed = Feed::factory()->create(['user_id' => $this->user->getKey()]);
+        $feed = Feed::factory()->create();
         $categories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
-        $feed->categories()->sync($categories);
+        $feed->categories()->syncWithoutDetaching($categories);
         $newCategories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
 
         // Run
-        $response = $this->asUser()->postJson("api/feeds/$feed->original_feed_id/categories", [
+        $response = $this->asUser()->postJson("api/feeds/$feed->id/categories", [
             'ids' => $newCategories->modelKeys()
         ]);
 
         // Asserts
         $response->assertNoContent();
-
-        $expectedCategories = $feed->categories()
-            ->whereIn('categories.id', [...$categories->modelKeys(), ...$newCategories->modelKeys()])
-            ->get();
-
-        $this->assertCount(4, $expectedCategories);
-        $this->assertDatabaseCount('category_feed', 4);
+        $this->assertCount(4, $feed->categories()->get());
+        $this->assertDatabaseCount('category_feeds', 4);
+        $this->assertDatabaseHas('subscriptions', ['feed_id' => $feed->id, 'user_id' => $this->user->id]);
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\FeedCategoriesController::store()
      */
-    public function cannot_add_categories_to_not_its_feed(): void
+    public function user_can_add_own_main_category_to_feed(): void
     {
         // Setup
         /** @var Feed $feed */
         $feed = Feed::factory()->create();
-        $newCategories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
+        $categories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
+        $feed->categories()->syncWithoutDetaching($categories);
 
         // Run
-        $response = $this->asUser()->postJson("api/feeds/$feed->original_feed_id/categories", [
-            'ids' => $newCategories->modelKeys()
+        $response = $this->asUser()->postJson("api/feeds/$feed->id/categories", [
+            'ids' => [$this->user->mainCategory->id]
         ]);
 
         // Asserts
-        $response->assertNotFound();
-        $this->assertDatabaseCount('category_feed', 0);
+        $response->assertNoContent();
+        $this->assertCount(3, $feed->categories()->get());
+        $this->assertDatabaseCount('category_feeds', 3);
+        $this->assertDatabaseHas('subscriptions', ['feed_id' => $feed->id, 'user_id' => $this->user->id]);
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\FeedCategoriesController::store()
      */
-    public function cannot_add_not_its_categories_to_feed(): void
+    public function user_cannot_add_not_own_custom_categories_to_feed(): void
     {
         // Setup
         /** @var Feed $feed */
-        $feed = Feed::factory()->create(['user_id' => $this->user->getKey()]);
+        $feed = Feed::factory()->create();
         $newCategories = Category::factory(2)->create();
 
         // Run
-        $response = $this->asUser()->postJson("api/feeds/$feed->original_feed_id/categories", [
+        $response = $this->asUser()->postJson("api/feeds/$feed->id/categories", [
             'ids' => $newCategories->modelKeys()
         ]);
 
         // Asserts
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $this->assertDatabaseCount('category_feed', 0);
+        $this->assertDatabaseCount('category_feeds', 0);
+        $this->assertDatabaseMissing('subscriptions', ['feed_id' => $feed->id, 'user_id' => $this->user->id]);
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\FeedCategoriesController::store()
+     */
+    public function user_cannot_add_not_own_main_category_to_feed(): void
+    {
+        // Setup
+        /** @var Feed $feed */
+        $feed = Feed::factory()->create();
+        $user = User::factory()->create();
+
+        // Run
+        $response = $this->asUser()->postJson("api/feeds/$feed->id/categories", [
+            'ids' => [$user->mainCategory->id]
+        ]);
+
+        // Asserts
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertDatabaseCount('category_feeds', 0);
+        $this->assertDatabaseMissing('subscriptions', ['feed_id' => $feed->id, 'user_id' => $this->user->id]);
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\FeedCategoriesController::destroy()
      */
-    public function can_remove_some_categories_from_feed(): void
+    public function user_can_remove_own_custom_categories_from_feed(): void
     {
         // Setup
         /** @var Feed $feed */
-        $feed = Feed::factory()->create(['user_id' => $this->user->getKey()]);
+        $feed = Feed::factory()->create();
         $categories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
-        $feed->categories()->sync($categories);
+        $feed->categories()->syncWithoutDetaching($categories);
         $otherCategories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
-        $feed->categories()->sync($otherCategories);
+        $feed->categories()->syncWithoutDetaching($otherCategories);
+        $this->user->subscribedFeeds()->syncWithoutDetaching($feed);
 
         // Run
-        $response = $this->asUser()->deleteJson("api/feeds/$feed->original_feed_id/categories", [
+        $response = $this->asUser()->deleteJson("api/feeds/$feed->id/categories", [
             'ids' => $categories->modelKeys(),
         ]);
 
@@ -113,58 +136,58 @@ class FeedCategoriesControllerTest extends TestCase
             ->get();
 
         $this->assertCount(2, $expectedCategories);
-        $this->assertDatabaseCount('category_feed', 2);
+        $this->assertDatabaseCount('category_feeds', 2);
+        $this->assertDatabaseHas('subscriptions', ['feed_id' => $feed->id, 'user_id' => $this->user->id]);
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\FeedCategoriesController::destroy()
      */
-    public function cannot_remove_categories_from_not_its_feed(): void
+    public function user_can_remove_own_main_category_from_feed(): void
     {
         // Setup
-        /** @var User $otherUser */
-        $otherUser = User::factory()->create();
         /** @var Feed $feed */
-        $feed = Feed::factory()->create(['user_id' => $otherUser->getKey()]);
-        $categories = Category::factory(2)->create(['user_id' => $otherUser->getKey()]);
-        $feed->categories()->sync($categories);
-        $userCategories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
+        $feed = Feed::factory()->create();
+        $feed->categories()->syncWithoutDetaching($this->user->mainCategory->id);
+        $otherCategories = Category::factory(2)->create(['user_id' => $this->user->getKey()]);
+        $feed->categories()->syncWithoutDetaching($otherCategories);
+        $this->user->subscribedFeeds()->syncWithoutDetaching($feed);
 
         // Run
-        $response = $this->asUser()->deleteJson("api/feeds/$feed->original_feed_id/categories", [
-            // used "userCategories" instead "categories" for skip ids validation
-            // and continue checking wrong feed
-            'ids' => $userCategories->modelKeys(),
+        $response = $this->asUser()->deleteJson("api/feeds/$feed->id/categories", [
+            'ids' => [$this->user->mainCategory->id],
         ]);
 
         // Asserts
-        $response->assertNotFound();
+        $response->assertNoContent();
 
         $expectedCategories = $feed->categories()
-            ->whereIn('categories.id', $categories->modelKeys())
+            ->whereIn('categories.id', $otherCategories->modelKeys())
             ->get();
 
         $this->assertCount(2, $expectedCategories);
-        $this->assertDatabaseCount('category_feed', 2);
+        $this->assertDatabaseCount('category_feeds', 2);
+        $this->assertDatabaseHas('subscriptions', ['feed_id' => $feed->id, 'user_id' => $this->user->id]);
     }
 
     /**
      * @test
      * @see \App\Http\Controllers\FeedCategoriesController::destroy()
      */
-    public function cannot_remove_not_its_categories_from_feed(): void
+    public function user_cannot_remove_not_own_custom_categories_from_feed(): void
     {
         // Setup
         /** @var User $otherUser */
         $otherUser = User::factory()->create();
         /** @var Feed $feed */
-        $feed = Feed::factory()->create(['user_id' => $this->user->getKey()]);
+        $feed = Feed::factory()->create();
         $categories = Category::factory(2)->create(['user_id' => $otherUser->getKey()]);
-        $feed->categories()->sync($categories);
+        $feed->categories()->syncWithoutDetaching($categories);
+        $otherUser->subscribedFeeds()->syncWithoutDetaching($feed);
 
         // Run
-        $response = $this->asUser()->deleteJson("api/feeds/$feed->original_feed_id/categories", [
+        $response = $this->asUser()->deleteJson("api/feeds/$feed->id/categories", [
             'ids' => $categories->modelKeys(),
         ]);
 
@@ -176,6 +199,39 @@ class FeedCategoriesControllerTest extends TestCase
             ->get();
 
         $this->assertCount(2, $expectedCategories);
-        $this->assertDatabaseCount('category_feed', 2);
+        $this->assertDatabaseCount('category_feeds', 2);
+        $this->assertDatabaseHas('subscriptions', ['feed_id' => $feed->id, 'user_id' => $otherUser->id]);
+    }
+
+    /**
+     * @test
+     * @see \App\Http\Controllers\FeedCategoriesController::destroy()
+     */
+    public function user_cannot_remove_not_own_main_category_from_feed(): void
+    {
+        // Setup
+        /** @var User $otherUser */
+        $otherUser = User::factory()->create();
+        /** @var Feed $feed */
+        $feed = Feed::factory()->create();
+        $categories = Category::factory(2)->create(['user_id' => $otherUser->getKey()]);
+        $feed->categories()->syncWithoutDetaching([...$categories->modelKeys(), $otherUser->mainCategory->id]);
+        $otherUser->subscribedFeeds()->syncWithoutDetaching($feed);
+
+        // Run
+        $response = $this->asUser()->deleteJson("api/feeds/$feed->id/categories", [
+            'ids' => [$otherUser->mainCategory->id],
+        ]);
+
+        // Asserts
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $expectedCategories = $feed->categories()
+            ->whereIn('categories.id', $categories->modelKeys())
+            ->get();
+
+        $this->assertCount(3, [...$expectedCategories, $otherUser->mainCategory]);
+        $this->assertDatabaseCount('category_feeds', 3);
+        $this->assertDatabaseHas('subscriptions', ['feed_id' => $feed->id, 'user_id' => $otherUser->id]);
     }
 }

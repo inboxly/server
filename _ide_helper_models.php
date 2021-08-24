@@ -17,7 +17,7 @@ namespace App\Models{
  * @property int $id
  * @property int $user_id
  * @property string $name
- * @property bool $is_default
+ * @property string $type
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Feed[] $feeds
@@ -38,6 +38,7 @@ namespace App\Models{
  * @property int $id
  * @property int $user_id
  * @property string $name
+ * @property string $type
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entry[] $entries
@@ -55,19 +56,24 @@ namespace App\Models{
 /**
  * App\Models\Entry
  *
- * @property int $id
- * @property int $user_id
- * @property int $feed_id
- * @property int $original_entry_id
- * @property \Illuminate\Support\Carbon|null $read_at
- * @property \Illuminate\Support\Carbon|null $saved_at
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany userCollections()
+ * @method \Illuminate\Database\Eloquent\Relations\HasOne userReadState()
+ * @property-read \App\Models\Collection[]|\Illuminate\Database\Eloquent\Collection|null $userCollections
+ * @property-read \App\Models\ReadState|null $userReadState
+ * @see \App\Http\Middleware\RegisterDynamicRelations::entryUserCollections()
+ * @see \App\Http\Middleware\RegisterDynamicRelations::entryUserReadState()
+ * @property string $id
+ * @property string $feed_id
+ * @property string $external_id
+ * @property string $name
+ * @property string|null $summary
+ * @property string|null $content
+ * @property string|null $url
+ * @property string|null $image
+ * @property object|null $author
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Collection[] $collections
- * @property-read int|null $collections_count
  * @property-read \App\Models\Feed $feed
- * @property-read \App\Models\OriginalEntry $original
- * @property-read \App\Models\User $user
  * @method static \Database\Factories\EntryFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Entry newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Entry newQuery()
@@ -80,19 +86,28 @@ namespace App\Models{
 /**
  * App\Models\Feed
  *
- * @property int $id
- * @property int $user_id
- * @property int $original_feed_id
- * @property string|null $name
- * @property \Illuminate\Support\Carbon|null $subscribed_at
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany userCategories()
+ * @property-read \App\Models\Category[]|\Illuminate\Database\Eloquent\Collection|null $userCategories
+ * @see \App\Http\Middleware\RegisterDynamicRelations::feedUserCategories()
+ * @property string $id
+ * @property string $name
+ * @property string $fetcher_key
+ * @property string $fetcher_feed_id
+ * @property \Inboxly\Receiver\Contracts\Parameters|null $parameters
+ * @property string|null $summary
+ * @property string|null $url
+ * @property string|null $image
+ * @property string|null $author
+ * @property string|null $language
+ * @property \Illuminate\Support\Carbon|null $next_update_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Category[] $categories
  * @property-read int|null $categories_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entry[] $entries
  * @property-read int|null $entries_count
- * @property-read \App\Models\OriginalFeed $original
- * @property-read \App\Models\User $user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $subscribers
+ * @property-read int|null $subscribers_count
  * @method static \Database\Factories\FeedFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Feed newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Feed newQuery()
@@ -103,56 +118,24 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * App\Models\OriginalEntry
+ * App\Models\ReadState
  *
- * @mixin \App\Models\OriginalEntry (hotfix for phpstorm typehints)
  * @property int $id
- * @property int $original_feed_id
- * @property string $external_id
- * @property string $hash
- * @property string $name
- * @property string|null $summary
- * @property string|null $content
- * @property string|null $url
- * @property string|null $image
- * @property object|null $author
+ * @property int $user_id
+ * @property string $entry_id
+ * @property string $feed_id
+ * @property string|null $read_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\OriginalFeed $originalFeed
- * @method static \Database\Factories\OriginalEntryFactory factory(...$parameters)
- * @method static \Illuminate\Database\Eloquent\Builder|OriginalEntry newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|OriginalEntry newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|OriginalEntry query()
+ * @property-read \App\Models\Entry $entry
+ * @property-read \App\Models\User $user
+ * @method static \Database\Factories\ReadStateFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|ReadState newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ReadState newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ReadState query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ReadState today()
  */
-	class OriginalEntry extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * App\Models\OriginalFeed
- *
- * @mixin \App\Models\OriginalFeed (hotfix for phpstorm typehints)
- * @property int $id
- * @property string $fetcher_key
- * @property string $fetcher_feed_id
- * @property \Inboxly\Receiver\Contracts\Parameters|null $parameters
- * @property string $name
- * @property string|null $summary
- * @property string|null $url
- * @property string|null $image
- * @property string|null $author
- * @property string|null $language
- * @property \Illuminate\Support\Carbon|null $next_update_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\OriginalEntry[] $originalEntries
- * @property-read int|null $original_entries_count
- * @method static \Database\Factories\OriginalFeedFactory factory(...$parameters)
- * @method static \Illuminate\Database\Eloquent\Builder|OriginalFeed newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|OriginalFeed newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|OriginalFeed query()
- */
-	class OriginalFeed extends \Eloquent {}
+	class ReadState extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -172,13 +155,22 @@ namespace App\Models{
  * @property-read int|null $categories_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Collection[] $collections
  * @property-read int|null $collections_count
- * @property-read \App\Models\Category|null $defaultCategory
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entry[] $entries
  * @property-read int|null $entries_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Feed[] $feeds
- * @property-read int|null $feeds_count
+ * @property-read \App\Models\Category|null $mainCategory
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entry[] $readEntries
+ * @property-read int|null $read_entries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ReadState[] $readStates
+ * @property-read int|null $read_states_count
+ * @property-read \App\Models\Collection|null $savedCollection
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Feed[] $subscribedFeeds
+ * @property-read int|null $subscribed_feeds_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
+ * @property-read int|null $tokens_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entry[] $unreadEntries
+ * @property-read int|null $unread_entries_count
  * @method static \Database\Factories\UserFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
