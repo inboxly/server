@@ -13,10 +13,12 @@ use App\Http\Controllers\FeedCategoriesController;
 use App\Http\Controllers\FeedEntriesController;
 use App\Http\Controllers\FeedsController;
 use App\Http\Controllers\FeedsCountsController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReadStatesController;
 use Illuminate\Support\Facades\Route;
 
 // Main
+Route::get('profile', ProfileController::class);
 Route::get('entries', EntriesController::class);
 Route::post('explore', ExploreController::class);
 

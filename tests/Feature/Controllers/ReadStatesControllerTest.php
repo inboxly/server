@@ -269,6 +269,7 @@ class ReadStatesControllerTest extends TestCase
         ]);
 
         // Asserts
+        $response->dump();
         $response->assertNoContent();
 
         $readEntries = $this->user->readEntries()->oldest()->get();
