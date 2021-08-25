@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\Collection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -23,7 +22,6 @@ class CollectionResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'is_customizable' => $this->type === Collection::TYPE_CUSTOM,
         ];
     }
 }

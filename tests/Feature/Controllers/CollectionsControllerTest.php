@@ -20,7 +20,6 @@ class CollectionsControllerTest extends TestCase
     public function user_can_get_list_of_collections(): void
     {
         // Setup
-        $readLaterCollection = $this->user->readLaterCollection;
         $collections = Collection::factory(2)->create(['user_id' => $this->user->getKey()]);
         $alienCollections = Collection::factory(2)->create(['user_id' => User::factory()->create()->getKey()]);
 
@@ -30,10 +29,9 @@ class CollectionsControllerTest extends TestCase
         // Asserts
         $response->assertOk();
 
-        $response->assertJsonCount(3, 'data');
+        $response->assertJsonCount(2, 'data');
 
         $response->assertJson(['data' => [
-            ['id' => $readLaterCollection->getKey()],
             ['id' => $collections->first()->getKey()],
             ['id' => $collections->last()->getKey()],
         ]]);
@@ -203,10 +201,6 @@ class CollectionsControllerTest extends TestCase
      */
     private function collectionStructure(): array
     {
-        return [
-            'id',
-            'name',
-            'is_customizable',
-        ];
+        return require base_path('tests/fixtures/collection-structure.php');
     }
 }

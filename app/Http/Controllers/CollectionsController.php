@@ -26,7 +26,7 @@ class CollectionsController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        return CollectionResource::collection($user->collections);
+        return CollectionResource::collection($user->customCollections);
     }
 
     /**

@@ -57,6 +57,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Custom collections owned by user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function customCollections(): HasMany
+    {
+        return $this->hasMany(Collection::class)->where('type', Collection::TYPE_CUSTOM);
+    }
+
+    /**
      * User's "read later" collection
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
