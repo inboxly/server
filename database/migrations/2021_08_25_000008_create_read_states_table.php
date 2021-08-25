@@ -28,7 +28,7 @@ class CreateReadStatesTable extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['user_id', 'entry_id']);
+            $table->unique(['user_id', 'entry_id', 'feed_id']);
         });
     }
 
