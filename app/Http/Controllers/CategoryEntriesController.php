@@ -42,8 +42,8 @@ class CategoryEntriesController extends Controller
             ->with(['userCollections', 'userReadState', 'feed.userCategories'])
             ->when(
                 $request->has('oldest'),
-                fn(Builder $builder) => $builder->oldest('created_at'),
-                fn(Builder $builder) => $builder->latest('created_at')
+                fn(Builder $builder) => $builder->oldest('entries.created_at'),
+                fn(Builder $builder) => $builder->latest('entries.created_at')
             )
             ->cursorPaginate();
 
