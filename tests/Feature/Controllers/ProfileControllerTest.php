@@ -26,13 +26,13 @@ class ProfileControllerTest extends TestCase
         $response->assertJson(['data' => [
             'name' => $this->user->name,
             'main_category_id' => $this->user->mainCategory->id,
-            'saved_collection_id' => $this->user->savedCollection->id,
+            'read_later_collection_id' => $this->user->readLaterCollection->id,
         ]]);
 
         $response->assertJsonStructure(['data' => [
             'name',
             'main_category_id',
-            'saved_collection_id',
+            'read_later_collection_id',
         ]]);
     }
 }

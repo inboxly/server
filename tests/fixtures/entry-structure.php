@@ -15,7 +15,7 @@ return [
         'url',
     ],
     'is_read',
-    'is_saved',
+    'is_read_later',
     'created_at',
     'updated_at',
     'feed' => require base_path('tests/fixtures/feed-structure.php'),

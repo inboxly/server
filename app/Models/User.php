@@ -57,13 +57,13 @@ class User extends Authenticatable
     }
 
     /**
-     * User's "saved" collection
+     * User's "read later" collection
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function savedCollection(): HasOne
+    public function readLaterCollection(): HasOne
     {
-        return $this->hasOne(Collection::class)->where('type', Collection::TYPE_SAVED);
+        return $this->hasOne(Collection::class)->where('type', Collection::TYPE_READ_LATER);
     }
 
     /**

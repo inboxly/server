@@ -19,7 +19,7 @@ class ProfileController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $user->load(['mainCategory', 'savedCollection']);
+        $user->load(['mainCategory', 'readLaterCollection']);
 
         return ProfileResource::make($user);
     }

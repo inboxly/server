@@ -22,7 +22,7 @@ class ProfileResource extends JsonResource
         return [
             'name' => $this->name,
             'main_category_id' => $this->mainCategory->id,
-            'saved_collection_id' => $this->savedCollection->id,
+            'read_later_collection_id' => $this->readLaterCollection->id,
         ];
     }
 }

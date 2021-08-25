@@ -20,7 +20,7 @@ class CollectionsControllerTest extends TestCase
     public function user_can_get_list_of_collections(): void
     {
         // Setup
-        $savedCollection = $this->user->savedCollection;
+        $readLaterCollection = $this->user->readLaterCollection;
         $collections = Collection::factory(2)->create(['user_id' => $this->user->getKey()]);
         $alienCollections = Collection::factory(2)->create(['user_id' => User::factory()->create()->getKey()]);
 
@@ -33,7 +33,7 @@ class CollectionsControllerTest extends TestCase
         $response->assertJsonCount(3, 'data');
 
         $response->assertJson(['data' => [
-            ['id' => $savedCollection->getKey()],
+            ['id' => $readLaterCollection->getKey()],
             ['id' => $collections->first()->getKey()],
             ['id' => $collections->last()->getKey()],
         ]]);
@@ -103,10 +103,10 @@ class CollectionsControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CollectionsController::update()
      */
-    public function user_cannot_rename_own_saved_collection(): void
+    public function user_cannot_rename_own_read_later_collection(): void
     {
         // Setup
-        $collection = $this->user->savedCollection;
+        $collection = $this->user->readLaterCollection;
 
         // Run
         $response = $this->asUser()->putJson("api/collections/{$collection->getKey()}", [
@@ -117,7 +117,7 @@ class CollectionsControllerTest extends TestCase
         $response->assertForbidden();
         $this->assertDatabaseHas(Collection::newModelInstance()->getTable(), [
             'id' => $collection->getKey(),
-            'name' => 'Saved',
+            'name' => 'Read Later',
         ]);
     }
 
@@ -168,10 +168,10 @@ class CollectionsControllerTest extends TestCase
      * @test
      * @see \App\Http\Controllers\CollectionsController::destroy()
      */
-    public function user_cannot_delete_own_saved_collection(): void
+    public function user_cannot_delete_own_read_later_collection(): void
     {
         // Setup
-        $collection = $this->user->savedCollection;
+        $collection = $this->user->readLaterCollection;
 
         // Run
         $response = $this->asUser()->deleteJson("api/collections/{$collection->getKey()}");

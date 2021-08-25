@@ -162,9 +162,9 @@ namespace App\Models{
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Entry[] $readEntries
  * @property-read int|null $read_entries_count
+ * @property-read \App\Models\Collection|null $readLaterCollection
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ReadState[] $readStates
  * @property-read int|null $read_states_count
- * @property-read \App\Models\Collection|null $savedCollection
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Feed[] $subscribedFeeds
  * @property-read int|null $subscribed_feeds_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens

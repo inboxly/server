@@ -16,7 +16,7 @@ class CollectionPolicy
     /**
      * Maximum number of entry collections that the user can create
      *
-     * Max count of "custom" collection +1 for predefined "saved" collection
+     * Max count of "custom" collection +1 for predefined "read later" collection
      */
     public const MAX_COUNT_OF_COLLECTIONS = 11;
 

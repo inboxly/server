@@ -32,9 +32,9 @@ class EntryResource extends JsonResource
                 'userReadState',
                 fn() => $this->userReadState->read_at,
             ),
-            'is_saved' => (bool)$this->whenLoaded(
+            'is_read_later' => (bool)$this->whenLoaded(
                 'userCollections',
-                fn() => $this->userCollections->where('type', Collection::TYPE_SAVED)->isNotEmpty(),
+                fn() => $this->userCollections->where('type', Collection::TYPE_READ_LATER)->isNotEmpty(),
             ),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -16,7 +16,7 @@ class Collection extends Model
     /**
      * Possible types of collections
      */
-    public const TYPE_SAVED = 'saved';
+    public const TYPE_READ_LATER = 'read_later';
     public const TYPE_CUSTOM = 'custom';
 
     /**

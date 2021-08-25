@@ -18,8 +18,8 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        // Create "saved" collection
-        $user->collections()->create(['type' => Collection::TYPE_SAVED, 'name' => 'Saved']);
+        // Create "read later" collection
+        $user->collections()->create(['type' => Collection::TYPE_READ_LATER, 'name' => 'Read Later']);
 
         // Create "main" category
         $user->categories()->create(['type' => Category::TYPE_MAIN, 'name' => 'Main']);
